@@ -3,192 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>深空獵人錢包深度紀錄</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
         :root {
-            --bg-deep: #0f1014; --card-bg: #1c1e26;
-            --accent-purple: #5e5ce6; --accent-gold: #fcc21b;
-            --text-main: #e4e6eb; --text-dim: #9ba1ad;
+            --bg-deep: #0f1014;
+            --card-bg: #1c1e26;
+            --accent-purple: #5e5ce6;
+            --accent-gold: #fcc21b;
+            --text-main: #e4e6eb;
+            --text-dim: #9ba1ad;
         }
-        body { background-color: var(--bg-deep); color: var(--text-main); font-family: 'Noto Sans TC', sans-serif; min-height: 100vh; }
-        .glass-card { background: var(--card-bg); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
-        .tab-btn { padding: 12px 24px; border-radius: 12px; font-size: 14px; color: var(--text-dim); transition: all 0.3s; background: rgba(255, 255, 255, 0.03); }
-        .tab-active { color: white; background: var(--accent-purple); box-shadow: 0 0 15px rgba(94, 92, 230, 0.4); }
-        input, select { background-color: #2c2e3a !important; color: white !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 12px !important; padding: 10px 14px !important; width: 100%; }
-        .confirm-btn { background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%); color: white; padding: 16px; border-radius: 16px; width: 100%; font-weight: bold; cursor: pointer; transition: opacity 0.2s; }
-        .confirm-btn:active { opacity: 0.8; }
-        .category-header { background: #252833; padding: 16px; border-radius: 16px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; }
-        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            letter-spacing: 0.5px;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .tab-btn {
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 640px) {
+            .tab-btn {
+                padding: 12px 24px;
+            }
+        }
+
+        .tab-active {
+            color: white;
+            background: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(94, 92, 230, 0.4);
+        }
+
+        input, select {
+            background-color: #2c2e3a !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 12px !important;
+            padding: 10px 14px !important;
+            transition: border 0.3s;
+        }
+        input:focus {
+            border-color: var(--accent-purple) !important;
+            outline: none;
+        }
+
+        .confirm-btn {
+            background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            font-size: 16px;
+            padding: 16px;
+            border-radius: 16px;
+            width: 100%;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s, opacity 0.2s;
+            cursor: pointer;
+        }
+        .confirm-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .counter-btn {
+            background: #2c2e3a;
+            color: white;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            user-select: none;
+            font-size: 14px;
+        }
+        .counter-btn:active {
+            background: #3d404d;
+        }
+
+        .check-item {
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            margin-bottom: 8px;
+        }
+        .check-item.active {
+            background: rgba(94, 92, 230, 0.15);
+            border-color: var(--accent-purple);
+        }
+
+        .category-header {
+            background: #252833;
+            padding: 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .category-content {
+            padding: 0 4px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .category-content.open {
+            max-height: 1200px;
+        }
+
+        #editModal, #nameModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .backup-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .pagination-ctrl {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 10px;
+        }
+        .page-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .editable-name { cursor: pointer; border-bottom: 2px dashed rgba(255,255,255,0.2); }
     </style>
 </head>
 <body class="p-4 md:p-8">
     <div class="max-w-6xl mx-auto">
-        <header class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="wallet" class="text-white"></i>
+                <div class="relative w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center shadow-lg border border-white/5">
+                    <i data-lucide="coins" class="w-6 h-6 text-yellow-400 absolute translate-x-[-4px] translate-y-[-4px]"></i>
+                    <i data-lucide="gem" class="w-5 h-5 text-purple-400 absolute translate-x-[6px] translate-y-[6px]"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-yellow-400"><span id="displayName">獵人</span>的錢包深度紀錄</h1>
-                    <p class="text-[10px] text-dim tracking-widest uppercase">Deepspace Finance Log V37</p>
+                    <h1 class="text-2xl font-bold tracking-tight text-yellow-400">
+                        <span id="displayHunterName" class="editable-name" onclick="openNameModal()">點擊輸入</span>獵人錢包深度紀錄
+                    </h1>
+                    <p class="text-xs font-bold text-[#9ba1ad] uppercase tracking-widest mt-0.5 italic">錢包破洞探測 (本地穩定版)</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="changeName()" class="text-xs bg-white/5 px-4 py-2 rounded-xl border border-white/10">修改名稱</button>
-                <button onclick="exportJSON()" class="text-xs bg-white/5 px-4 py-2 rounded-xl border border-white/10">匯出備份</button>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="exportData()" class="backup-btn"><i data-lucide="download"></i> 匯出備份</button>
+                <button onclick="document.getElementById('importInput').click()" class="backup-btn"><i data-lucide="upload"></i> 匯入還原</button>
+                <input type="file" id="importInput" class="hidden" accept=".json" onchange="importData(event)">
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-            <div class="stat-card">
-                <span class="text-xs text-dim">總計消費金額</span>
-                <div class="text-3xl font-bold text-white mt-1">NT$ <span id="totalCost">0</span></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div class="glass-card p-8 flex flex-col justify-center">
+                <span class="text-[11px] text-[#9ba1ad] uppercase tracking-widest font-bold mb-4">總計消費金額</span>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-xs text-[#9ba1ad]">NT$</span>
+                    <span id="totalP" class="text-4xl font-bold text-white">0</span>
+                </div>
             </div>
-            <div class="stat-card">
-                <span class="text-xs text-dim">累計消耗紅鑽</span>
-                <div class="text-3xl font-bold text-purple-400 mt-1"><span id="totalDiamonds">0</span></div>
+            <div class="glass-card p-8 flex flex-col justify-center">
+                <span class="text-[11px] text-[#9ba1ad] uppercase tracking-widest font-bold mb-2">最近一筆活動</span>
+                <div id="recentActivity" class="text-lg font-bold text-white">-</div>
             </div>
         </div>
 
-        <div class="flex p-1 bg-[#1c1e26] rounded-2xl mb-8 w-fit border border-white/5 gap-1">
-            <button onclick="switchTab('activity')" id="tab-activity" class="tab-btn tab-active">活動花費</button>
-            <button onclick="switchTab('topup')" id="tab-topup" class="tab-btn">儲值/密約</button>
-        </header>
+        <div class="flex p-1 bg-[#1c1e26] rounded-2xl mb-10 w-fit border border-white/5 gap-1">
+            <button onclick="switchTab('activity')" id="nav-activity" class="tab-btn tab-active">活動花費</button>
+            <button onclick="switchTab('topup')" id="nav-topup" class="tab-btn">儲值/密約</button>
+            <button onclick="switchTab('analysis')" id="nav-analysis" class="tab-btn">破洞分析</button>
+        </div>
 
-        <main id="content-activity" class="space-y-6">
+        <div id="section-activity" class="space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card p-8">
+                    <h3 class="text-lg font-bold mb-8 flex items-center gap-3"><i data-lucide="plus-circle" class="text-indigo-400"></i>登錄活動花費</h3>
+                    <div class="space-y-6">
+                        <input type="text" id="actName" placeholder="例如：人間縫綣意..." class="w-full">
+                        <input type="date" id="actDate" class="w-full">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="number" id="actCash" placeholder="課金金額 NT$">
+                            <input type="number" id="actDia" placeholder="耗鑽總計">
+                        </div>
+                        <button onclick="saveActivity()" class="confirm-btn">確認活動花費</button>
+                    </div>
+                </div>
+                <div class="glass-card p-8">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-3"><i data-lucide="history" class="text-purple-400"></i>活動歷程</h3>
+                    <div id="activityList" class="space-y-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-topup" class="hidden">
             <div class="glass-card p-8">
-                <h3 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="sparkles" class="text-indigo-400"></i> 登錄新活動</h3>
+                <h3 class="text-lg font-bold mb-6 text-yellow-400">快捷儲值登錄</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs text-dim block mb-2">活動名稱</label>
-                        <input type="text" id="actName" placeholder="例如：人間縫綣意">
-                    </div>
-                    <div>
-                        <label class="text-xs text-dim block mb-2">日期</label>
-                        <input type="date" id="actDate">
-                    </div>
-                    <div>
-                        <label class="text-xs text-dim block mb-2">消耗紅鑽</label>
-                        <input type="number" id="actDia" placeholder="0">
-                    </div>
-                    <div>
-                        <label class="text-xs text-dim block mb-2">額外課金 (NT$)</label>
-                        <input type="number" id="actCash" placeholder="0">
-                    </div>
+                    <div onclick="quickTopup('月卡', 150)" class="check-item p-4 flex justify-between"><span>月卡 (鎏金卡)</span><span>NT$ 150</span></div>
+                    <div onclick="quickTopup('特別密約', 320)" class="check-item p-4 flex justify-between"><span>特別密約</span><span>NT$ 320</span></div>
+                    <div onclick="quickTopup('週卡', 220)" class="check-item p-4 flex justify-between"><span>週卡 (特權)</span><span>NT$ 220</span></div>
                 </div>
-                <button onclick="addRecord()" class="confirm-btn mt-8">確認登錄活動</button>
+                <div id="paymentList" class="mt-8 space-y-3"></div>
             </div>
-        </main>
+        </div>
 
-        <main id="content-topup" class="hidden space-y-6">
-            <div class="glass-card p-8">
-                <h3 class="text-lg font-bold mb-6 text-yellow-400">常駐與訂閱項目</h3>
-                <div class="grid grid-cols-1 gap-3">
-                    <button onclick="quickAdd('月卡 (鎏金卡)', 150)" class="category-header"><span>月卡 (鎏金卡)</span><span>NT$ 150</span></button>
-                    <button onclick="quickAdd('特別密約', 320)" class="category-header"><span>特別密約</span><span>NT$ 320</span></button>
-                    <button onclick="quickAdd('週卡 (特權)', 220)" class="category-header"><span>週卡 (特權)</span><span>NT$ 220</span></button>
-                </div>
+        <div id="section-analysis" class="hidden">
+            <div class="glass-card p-8 text-center text-dim italic">
+                數據分析功能已就緒，請登錄資料以查看結果。
             </div>
-        </main>
+        </div>
+    </div>
 
-        <section class="mt-10">
-            <h3 class="font-bold mb-4 flex items-center gap-2"><i data-lucide="clock-3"></i> 歷史紀錄</h3>
-            <div id="logList" class="space-y-3"></div>
-        </section>
+    <div id="nameModal">
+        <div class="glass-card p-8 w-full max-w-sm">
+            <h3 class="text-xl font-bold mb-6">更改獵人名稱</h3>
+            <input type="text" id="inputHunterName" class="w-full mb-6" placeholder="輸入妳的名字">
+            <div class="flex gap-4">
+                <button onclick="closeNameModal()" class="w-full py-3 bg-white/5 rounded-xl">取消</button>
+                <button onclick="saveHunterName()" class="w-full py-3 bg-indigo-500 rounded-xl font-bold">儲存</button>
+            </div>
+        </div>
     </div>
 
     <script>
         lucide.createIcons();
-        let records = JSON.parse(localStorage.getItem('fay_data') || '[]');
+        
+        let activities = JSON.parse(localStorage.getItem('fay_activities') || '[]');
+        let payments = JSON.parse(localStorage.getItem('fay_payments') || '[]');
         let hunterName = localStorage.getItem('fay_name') || '苡菲';
 
         function init() {
-            document.getElementById('displayName').innerText = hunterName;
-            updateUI();
+            document.getElementById('displayHunterName').innerText = hunterName;
+            renderUI();
         }
 
         function switchTab(tab) {
-            document.getElementById('content-activity').classList.toggle('hidden', tab !== 'activity');
-            document.getElementById('content-topup').classList.toggle('hidden', tab !== 'topup');
-            document.getElementById('tab-activity').classList.toggle('tab-active', tab === 'activity');
-            document.getElementById('tab-topup').classList.toggle('tab-active', tab === 'topup');
+            ['activity', 'topup', 'analysis'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tab);
+                document.getElementById(`nav-${t}`).classList.toggle('tab-active', t === tab);
+            });
         }
 
-        function addRecord() {
+        function saveActivity() {
             const name = document.getElementById('actName').value;
-            const cost = parseInt(document.getElementById('actCash').value) || 0;
+            const cash = parseInt(document.getElementById('actCash').value) || 0;
             const dia = parseInt(document.getElementById('actDia').value) || 0;
             const date = document.getElementById('actDate').value || new Date().toLocaleDateString();
-            
+
             if(!name) return alert('請輸入活動名稱');
+            activities.unshift({ name, cash, dia, date });
+            localStorage.setItem('fay_activities', JSON.stringify(activities));
+            renderUI();
+        }
+
+        function quickTopup(name, cash) {
+            payments.unshift({ name, cash, date: new Date().toLocaleDateString() });
+            localStorage.setItem('fay_payments', JSON.stringify(payments));
+            renderUI();
+            alert(`已記錄: ${name} NT$ ${cash}`);
+        }
+
+        function renderUI() {
+            // 計算總額
+            const totalAct = activities.reduce((sum, item) => sum + item.cash, 0);
+            const totalPay = payments.reduce((sum, item) => sum + item.cash, 0);
+            document.getElementById('totalP').innerText = (totalAct + totalPay).toLocaleString();
             
-            records.unshift({ name, cost, dia, date });
-            save();
-        }
-
-        function quickAdd(name, cost) {
-            records.unshift({ name, cost, dia: 0, date: new Date().toLocaleDateString() });
-            save();
-            alert(`已加入 ${name}`);
-        }
-
-        function save() {
-            localStorage.setItem('fay_data', JSON.stringify(records));
-            updateUI();
-        }
-
-        function updateUI() {
-            const list = document.getElementById('logList');
-            let totalC = 0, totalD = 0;
-            
-            list.innerHTML = records.map((r, index) => {
-                totalC += r.cost;
-                totalD += r.dia;
-                return `
-                    <div class="glass-card p-4 flex justify-between items-center border-l-4 border-indigo-500">
-                        <div>
-                            <div class="font-bold">${r.name}</div>
-                            <div class="text-[10px] text-dim">${r.date} · 💎 ${r.dia}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-yellow-400 font-bold">NT$ ${r.cost}</div>
-                            <button onclick="deleteRec(${index})" class="text-[10px] text-red-400 opacity-50">刪除</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            document.getElementById('totalCost').innerText = totalC.toLocaleString();
-            document.getElementById('totalDiamonds').innerText = totalD.toLocaleString();
-        }
-
-        function deleteRec(i) {
-            if(confirm('確定刪除這筆紀錄？')) {
-                records.splice(i, 1);
-                save();
+            if(activities.length > 0) {
+                document.getElementById('recentActivity').innerText = activities[0].name;
             }
+
+            // 渲染活動清單
+            document.getElementById('activityList').innerHTML = activities.map(a => `
+                <div class="p-4 bg-white/5 rounded-2xl flex justify-between items-center border border-white/5">
+                    <div><div class="font-bold">${a.name}</div><div class="text-[10px] text-dim">${a.date}</div></div>
+                    <div class="text-right"><div class="text-yellow-400">NT$ ${a.cash}</div><div class="text-[10px] text-purple-400">💎 ${a.dia}</div></div>
+                </div>
+            `).join('');
+
+            // 渲染儲值清單
+            document.getElementById('paymentList').innerHTML = payments.map(p => `
+                <div class="p-3 bg-white/5 rounded-xl flex justify-between text-sm">
+                    <span>${p.name} (${p.date})</span><span class="text-yellow-400 font-bold">NT$ ${p.cash}</span>
+                </div>
+            `).join('');
         }
 
-        function changeName() {
-            const n = prompt('請輸入妳的名字：', hunterName);
+        window.openNameModal = () => document.getElementById('nameModal').style.display = 'flex';
+        window.closeNameModal = () => document.getElementById('nameModal').style.display = 'none';
+        window.saveHunterName = () => {
+            const n = document.getElementById('inputHunterName').value.trim();
             if(n) {
                 hunterName = n;
                 localStorage.setItem('fay_name', n);
-                document.getElementById('displayName').innerText = n;
+                document.getElementById('displayHunterName').innerText = n;
             }
-        }
+            closeNameModal();
+        };
 
-        function exportJSON() {
-            const blob = new Blob([JSON.stringify(records)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
+        window.exportData = () => {
+            const data = { activities, payments, hunterName };
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `深空紀錄_${hunterName}.json`;
+            a.href = URL.createObjectURL(blob);
+            a.download = `獵人錢包備份_${hunterName}.json`;
             a.click();
-        }
+        };
+
+        window.importData = (e) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const data = JSON.parse(event.target.result);
+                activities = data.activities || [];
+                payments = data.payments || [];
+                hunterName = data.hunterName || '苡菲';
+                localStorage.setItem('fay_activities', JSON.stringify(activities));
+                localStorage.setItem('fay_payments', JSON.stringify(payments));
+                localStorage.setItem('fay_name', hunterName);
+                init();
+            };
+            reader.readAsText(e.target.files[0]);
+        };
 
         init();
     </script>
