@@ -808,7 +808,7 @@
                 payments.push({ id: 'p_'+Date.now(), date, type: '其他課金', amount: oP, qty: 1, ref: name, timestamp });
                 document.getElementById('otherPkgPrice').value = '';
             }
-            const assocSumStr = document.getElementById('assocPreview').innerText.match(/\d+/);
+            const assocSumStr = document.getElementById('assocPreview').innerText.replace(/,/g, '').match(/\d+/);
             const assocSum = assocSumStr ? parseInt(assocSumStr[0].replace(/,/g, '')) : 0;
             if (assocSum > 0) {
                 payments.push({ id: 'p_'+Date.now(), date, type: '協會等級禮包', amount: assocSum, qty: 1, ref: name, timestamp });
