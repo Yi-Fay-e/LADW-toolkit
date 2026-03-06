@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-TW" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>活動財務日誌 V37</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-deep: #0f1014;
+            --card-bg: #1c1e26;
+            --accent-purple: #5e5ce6;
+            --accent-gold: #fcc21b;
+            --text-main: #e4e6eb;
+            --text-dim: #9ba1ad;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            letter-spacing: 0.5px;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .tab-btn {
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 640px) {
+            .tab-btn {
+                padding: 12px 24px;
+            }
+        }
+
+        .tab-active {
+            color: white;
+            background: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(94, 92, 230, 0.4);
+        }
+
+        input, select {
+            background-color: #2c2e3a !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 12px !important;
+            padding: 10px 14px !important;
+            transition: border 0.3s;
+        }
+        input:focus {
+            border-color: var(--accent-purple) !important;
+            outline: none;
+        }
+
+        .confirm-btn {
+            background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            font-size: 16px;
+            padding: 16px;
+            border-radius: 16px;
+            width: 100%;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s, opacity 0.2s;
+            cursor: pointer;
+        }
+        .confirm-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .counter-btn {
+            background: #2c2e3a;
+            color: white;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            user-select: none;
+            font-size: 14px;
+        }
+        .counter-btn:active {
+            background: #3d404d;
+        }
+
+        .max-btn {
+            background: rgba(94, 92, 230, 0.1);
+            color: var(--accent-purple);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            border: 1px solid var(--accent-purple);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .max-btn:hover {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        .check-item {
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .check-item.active {
+            background: rgba(94, 92, 230, 0.15);
+            border-color: var(--accent-purple);
+        }
+
+        .category-header {
+            background: #252833;
+            padding: 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .category-content {
+            padding: 0 4px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .category-content.open {
+            max-height: 1200px;
+        }
+
+        .stat-value {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #3c3f4d; border-radius: 10px; }
+
+        #editModal, #nameModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .crystal-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #2c2e3a;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 8px;
+        }
+
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--accent-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .editable-name {
+            cursor: pointer;
+            border-bottom: 2px dashed rgba(255,255,255,0.2);
+        }
+
+        .backup-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .pagination-ctrl {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 10px;
+        }
+        .page-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .page-info {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p class="mt-4 text-xs text-dim tracking-widest uppercase">Syncing Data...</p>
+    </div>
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div class="relative w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center shadow-lg border border-white/5">
+                    <i data-lucide="coins" class="w-6 h-6 text-yellow-400 absolute translate-x-[-4px] translate-y-[-4px]"></i>
+                    <i data-lucide="gem" class="w-5 h-5 text-purple-400 absolute translate-x-[6px] translate-y-[6px]"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-yellow-400">
+                        <span id="displayHunterName" class="editable-name" onclick="openNameModal()">點擊輸入</span>獵人錢包深度紀錄
+                    </h1>
+                    <p class="text-xs font-bold text-[#9ba1ad] uppercase tracking-widest mt-0.5 italic">錢包破洞探測</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button id="btn-export" type="button" class="backup-btn">
+                    <i data-lucide="download" class="w-4 h-4"></i> 匯出備份
+                </button>
+                <button type="button" onclick="document.getElementById('importInput').click()" class="backup-btn">
+                    <i data-lucide="upload" class="w-4 h-4"></i> 匯入還原
+                </button>
+                <input type="file" id="importInput" class="hidden" accept=".json" onchange="importData(event)">
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div class="glass-card p-8 flex flex-col justify-center">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-[11px] text-[#9ba1ad] uppercase tracking-widest font-bold">總計消費金額</span>
+                    <select id="totalTimeFilter" class="text-[11px] !py-1 !px-2 border-none bg-white/5 cursor-pointer">
+                        <option value="all">所有時間</option>
+                    </select>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-xs text-[#9ba1ad]">NT$</span>
+                    <span id="totalP" class="text-4xl font-bold text-white stat-value">0</span>
+                </div>
+            </div>
+            <div class="glass-card p-8 flex flex-col justify-center">
+                <span class="text-[11px] text-[#9ba1ad] uppercase tracking-widest font-bold mb-2">最近一筆活動</span>
+                <div id="recentActivity" class="text-lg font-bold text-white">-</div>
+            </div>
+        </div>
+
+        <div class="flex p-1 bg-[#1c1e26] rounded-2xl mb-10 w-fit border border-white/5 gap-1">
+            <button id="nav-activity" class="tab-btn tab-active">活動花費</button>
+            <button id="nav-topup" class="tab-btn">儲值/密約</button>
+            <button id="nav-analysis" class="tab-btn">破洞分析</button>
+        </div>
+
+        <div id="section-activity" class="space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card p-8">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="p-2 bg-indigo-500/10 rounded-lg"><i data-lucide="plus-circle" class="w-5 h-5 text-indigo-400"></i></div>
+                        <h3 class="text-lg font-bold">登錄活動花費</h3>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 gap-6">
+                            <div>
+                                <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">活動名稱</label>
+                                <input type="text" id="actName" placeholder="例如：人間縫綣意..." class="w-full">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">活動日期</label>
+                                <input type="date" id="actDate" class="w-full">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">消耗紅鑽</label>
+                                <div class="flex gap-4">
+                                    <input type="number" id="actBefore" placeholder="抽卡前數量" class="w-full">
+                                    <input type="number" id="actAfter" placeholder="抽卡後數量" class="w-full">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <div class="category-header" data-target="cat-limited">
+                                <span class="font-bold text-sm">限定禮包</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                            </div>
+                            <div id="cat-limited" class="category-content"><div id="list-limited" class="grid grid-cols-1 gap-2 py-2"></div></div>
+
+                            <div class="category-header" data-target="cat-revival">
+                                <span class="font-bold text-sm">復刻禮包</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                            </div>
+                            <div id="cat-revival" class="category-content"><div id="list-revival" class="grid grid-cols-1 gap-2 py-2"></div></div>
+
+                            <div class="category-header" data-target="cat-crystal">
+                                <span class="font-bold text-sm">晶鑽儲值</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                            </div>
+                            <div id="cat-crystal" class="category-content"><div id="act-crystal-list" class="space-y-2 py-2"></div></div>
+
+                            <div class="category-header" data-target="cat-assoc">
+                                <span class="font-bold text-sm">協會禮包</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                            </div>
+                            <div id="cat-assoc" class="category-content">
+                                <div class="bg-[#2c2e3a] p-5 rounded-2xl space-y-6 border border-white/5 my-2">
+                                    <div class="space-y-4">
+                                        <div><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">起始等級</label><select id="assocStart" class="text-sm rounded-xl w-full"></select></div>
+                                        <div><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">結束等級</label><select id="assocEnd" class="text-sm rounded-xl w-full"></select></div>
+                                    </div>
+                                    <button id="btn-assoc-max" class="w-full text-xs bg-white/5 text-[#e4e6eb] py-3 rounded-xl">全選區間</button>
+                                    <div id="assocPreview" class="text-right text-sm text-indigo-400 font-bold">預計金額：NT$ 0</div>
+                                </div>
+                            </div>
+
+                            <div class="category-header" data-target="cat-other">
+                                <span class="font-bold text-sm">其他課金</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                            </div>
+                            <div id="cat-other" class="category-content">
+                                <div class="bg-[#2c2e3a] p-5 rounded-2xl space-y-4 border border-white/5 my-2">
+                                    <div><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">金額 (NT$)</label><input type="number" id="otherPkgPrice" placeholder="輸入金額" class="text-sm rounded-xl w-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="btn-submit-activity" class="confirm-btn mt-4">確認活動花費</button>
+                    </div>
+                </div>
+                <div class="glass-card p-8 flex flex-col">
+                    <div class="flex flex-col gap-4 mb-8">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold flex items-center gap-3"><i data-lucide="history" class="w-5 h-5 text-purple-400"></i>活動歷程</h3>
+                            <span id="historyCount" class="text-xs text-[#9ba1ad] font-bold">0 筆活動</span>
+                        </div>
+                        <select id="activityFilter" class="w-full text-sm"></select>
+                    </div>
+                    
+                    <div id="monthActivitySummary" class="hidden mb-6 p-4 bg-white/5 rounded-2xl border border-white/5 grid grid-cols-2 gap-4">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-dim uppercase tracking-wider font-bold mb-1">當月耗鑽總計</span>
+                            <span id="monthSumDiamonds" class="text-lg font-bold text-blue-400">0</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-dim uppercase tracking-wider font-bold mb-1">當月開銷總計</span>
+                            <span id="monthSumCost" class="text-lg font-bold text-yellow-400">NT$ 0</span>
+                        </div>
+                    </div>
+
+                    <div id="activityList" class="space-y-4"></div>
+                    
+                    <div id="actPagination" class="pagination-ctrl">
+                        <button id="actPrev" class="page-btn">上一頁</button>
+                        <span id="actPageInfo" class="page-info">第 1 / 1 頁</span>
+                        <button id="actNext" class="page-btn">下一頁</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-topup" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="glass-card p-8">
+                        <div class="mb-6">
+                            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1 uppercase tracking-wider">購買日期</label>
+                            <input type="date" id="topupDate" class="w-full">
+                        </div>
+
+                        <h3 class="text-sm font-bold mb-4 flex items-center gap-2 text-[#fcc21b]"><i data-lucide="credit-card" class="w-4 h-4"></i> 月卡/週卡/每日</h3>
+                        <div class="space-y-3 mb-8">
+                            <div class="flex items-center justify-between p-4 bg-[#252833] rounded-2xl border border-white/5">
+                                <div class="flex flex-col"><span class="text-sm font-bold">月卡(鎏金卡)</span><span class="text-[10px] text-[#9ba1ad]">NT$ 150</span></div>
+                                <div class="flex items-center gap-4">
+                                    <button class="counter-btn" onclick="adjustQty('qty_monthly', -1)">-</button>
+                                    <span id="qty_monthly" class="w-4 text-center text-sm font-bold">0</span>
+                                    <button class="counter-btn" onclick="adjustQty('qty_monthly', 1)">+</button>
+                                </div>
+                            </div>
+                            <div id="check_weekly" class="check-item flex items-center justify-between p-4">
+                                <div class="flex flex-col"><span class="text-sm font-bold">週卡(特權)</span><span class="text-[10px] text-[#9ba1ad]">NT$ 220</span></div>
+                                <div class="opacity-0"><i data-lucide="circle-check"></i></div>
+                            </div>
+                            <div id="check_daily_rare" class="check-item flex items-center justify-between p-4">
+                                <div class="flex flex-col"><span class="text-sm font-bold">每日限購(珍貴)</span><span class="text-[10px] text-[#9ba1ad]">NT$ 15</span></div>
+                                <div class="opacity-0"><i data-lucide="circle-check"></i></div>
+                            </div>
+                            <div id="check_daily_bright" class="check-item flex items-center justify-between p-4">
+                                <div class="flex flex-col"><span class="text-sm font-bold">每日限購(璀璨)</span><span class="text-[10px] text-[#9ba1ad]">NT$ 30</span></div>
+                                <div class="opacity-0"><i data-lucide="circle-check"></i></div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-sm font-bold mb-4 flex items-center gap-2 text-purple-400"><i data-lucide="scroll" class="w-4 h-4"></i> 密約</h3>
+                        <div class="space-y-3 mb-8">
+                            <div id="check_promise_special" class="check-item flex items-center justify-between p-4">
+                                <div class="flex flex-col"><span class="text-sm font-bold">特別密約</span><span class="text-[10px] text-[#9ba1ad]">NT$ 320</span></div>
+                                <div class="opacity-0"><i data-lucide="circle-check"></i></div>
+                            </div>
+                            <div id="check_promise_upgrade" class="check-item flex items-center justify-between p-4">
+                                <div class="flex flex-col"><span class="text-sm font-bold">升級版特別密約</span><span class="text-[10px] text-[#9ba1ad]">NT$ 490</span></div>
+                                <div class="opacity-0"><i data-lucide="circle-check"></i></div>
+                            </div>
+                        </div>
+
+                        <div class="category-header" data-target="cat-gen-crystal">
+                            <span class="font-bold text-sm text-[#5e5ce6]">晶鑽儲值</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                        </div>
+                        <div id="cat-gen-crystal" class="category-content">
+                            <div id="general-crystal-list" class="space-y-2 py-2"></div>
+                        </div>
+
+                        <button id="btn-submit-topup" class="confirm-btn mt-8">確認更新紀錄</button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="glass-card p-8 h-full flex flex-col">
+                        <div class="flex flex-col gap-6 mb-8">
+                            <h3 class="text-lg font-bold flex items-center gap-3"><i data-lucide="list" class="w-5 h-5 text-indigo-400"></i>儲值紀錄</h3>
+                            <select id="monthFilter" class="w-full text-sm"></select>
+                        </div>
+                        <div id="paymentList" class="space-y-4 flex-1"></div>
+                        
+                        <div id="payPagination" class="pagination-ctrl">
+                            <button id="payPrev" class="page-btn">上一頁</button flash-preview-09-2025:generateContent?key=${apiKey}">
+                            <span id="payPageInfo" class="page-info">第 1 / 1 頁</span>
+                            <button id="payNext" class="page-btn">下一頁</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-analysis" class="hidden">
+            <div class="glass-card p-8 min-h-[600px]">
+                <div class="flex flex-col gap-6 mb-8">
+                    <h3 class="text-lg font-bold flex items-center gap-3"><i data-lucide="pie-chart" class="w-5 h-5 text-amber-400"></i>破洞分析</h3>
+                    <select id="analysisFilter" class="w-full text-sm"></select>
+                </div>
+                <div id="analysisContent" class="space-y-6">
+                    <div class="text-center py-20 text-dim text-sm italic">請選擇月份以查看全量數據分析...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="nameModal">
+        <div class="glass-card p-8 w-full max-sm shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><i data-lucide="user-round-pen"></i> 更改獵人名稱</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold">請輸入名稱</label>
+                    <input type="text" id="inputHunterName" placeholder="例如：苡菲" class="w-full">
+                </div>
+            </div>
+            <div class="flex gap-4 mt-8">
+                <button onclick="closeNameModal()" class="w-full py-3 bg-white/5 rounded-xl font-bold">取消</button>
+                <button onclick="saveHunterName()" class="w-full py-3 bg-indigo-500 rounded-xl font-bold text-white">儲存</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ds-tracker-v36';
+
+        let activities = [];
+        let payments = [];
+        let hunterName = "點擊輸入";
+        let currentUser = null;
+        let checkedStates = {};
+        let isDataLoaded = false;
+
+        const PAGE_SIZE = 10;
+        let actCurrentPage = 1;
+        let payCurrentPage = 1;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await initialFetch(user.uid);
+                setupDataListeners(user.uid);
+                hideLoading();
+            } else {
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (e) {
+                    hideLoading();
+                }
+            }
+        });
+
+        async function initialFetch(uid) {
+            try {
+                const [actDoc, payDoc, profileDoc] = await Promise.all([
+                    getDoc(doc(db, 'artifacts', appId, 'users', uid, 'data', 'activities')),
+                    getDoc(doc(db, 'artifacts', appId, 'users', uid, 'data', 'payments')),
+                    getDoc(doc(db, 'artifacts', appId, 'users', uid, 'data', 'profile'))
+                ]);
+                
+                if (actDoc.exists()) activities = actDoc.data().list || [];
+                if (payDoc.exists()) payments = payDoc.data().list || [];
+                if (profileDoc.exists()) {
+                    hunterName = profileDoc.data().hunterName || "點擊輸入";
+                    updateHunterNameUI();
+                }
+                
+                isDataLoaded = true;
+                updateFilters();
+                renderUI();
+            } catch (e) { 
+                isDataLoaded = true;
+            }
+        }
+
+        function setupDataListeners(uid) {
+            onSnapshot(doc(db, 'artifacts', appId, 'users', uid, 'data', 'activities'), (s) => { 
+                if (s.exists()) { 
+                    const newData = s.data().list || [];
+                    if (JSON.stringify(newData) !== JSON.stringify(activities)) {
+                        activities = newData; updateFilters(); renderUI(); 
+                    }
+                }
+            }, (err) => console.error("Act Snapshot error", err));
+
+            onSnapshot(doc(db, 'artifacts', appId, 'users', uid, 'data', 'payments'), (s) => { 
+                if (s.exists()) { 
+                    const newData = s.data().list || [];
+                    if (JSON.stringify(newData) !== JSON.stringify(payments)) {
+                        payments = newData; updateFilters(); renderUI(); 
+                    }
+                }
+            }, (err) => console.error("Pay Snapshot error", err));
+
+            onSnapshot(doc(db, 'artifacts', appId, 'users', uid, 'data', 'profile'), (s) => {
+                if (s.exists()) {
+                    const newName = s.data().hunterName || "點擊輸入";
+                    if (newName !== hunterName) {
+                        hunterName = newName; updateHunterNameUI();
+                    }
+                }
+            }, (err) => console.error("Profile Snapshot error", err));
+        }
+
+        async function cloudSave() {
+            if (!currentUser || !isDataLoaded) return;
+            const uid = currentUser.uid;
+            try {
+                await Promise.all([
+                    setDoc(doc(db, 'artifacts', appId, 'users', uid, 'data', 'activities'), { list: activities }, { merge: true }),
+                    setDoc(doc(db, 'artifacts', appId, 'users', uid, 'data', 'payments'), { list: payments }, { merge: true }),
+                    setDoc(doc(db, 'artifacts', appId, 'users', uid, 'data', 'profile'), { hunterName: hunterName }, { merge: true })
+                ]);
+            } catch (e) { console.error("Save error:", e); }
+        }
+
+        function updateHunterNameUI() {
+            const el = document.getElementById('displayHunterName');
+            if(!el) return;
+            el.innerText = hunterName;
+            if (hunterName === "點擊輸入") {
+                el.classList.remove('text-yellow-400');
+                el.classList.add('text-[#9ba1ad]'); 
+            } else {
+                el.classList.remove('text-[#9ba1ad]');
+                el.classList.add('text-yellow-400');
+            }
+        }
+
+        window.openNameModal = () => {
+            const input = document.getElementById('inputHunterName');
+            input.value = hunterName === "點擊輸入" ? "" : hunterName;
+            document.getElementById('nameModal').style.display = 'flex';
+        };
+
+        window.closeNameModal = () => {
+            document.getElementById('nameModal').style.display = 'none';
+        };
+
+        window.saveHunterName = async () => {
+            const val = document.getElementById('inputHunterName').value.trim();
+            if (val) {
+                hunterName = val;
+                updateHunterNameUI();
+                await cloudSave();
+            }
+            closeNameModal();
+        };
+
+        // 修改後的匯出函式
+        async function triggerExport(e) {
+            // 確保阻止任何可能的 Submit 或冒泡行為
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            if (!isDataLoaded) return;
+            
+            try {
+                const data = { 
+                    v: 37, 
+                    hunterName: hunterName, 
+                    activities: activities, 
+                    payments: payments, 
+                    exportAt: new Date().toISOString() 
+                };
+                
+                const jsonString = JSON.stringify(data, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                
+                // 採用穩定下載流程：建立隱藏 A 標籤 -> 模擬點擊 -> 立即移除
+                const link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = url;
+                link.download = `獵人錢包紀錄_${hunterName}_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+                
+                document.body.appendChild(link);
+                link.click();
+                
+                // 清理
+                setTimeout(() => { 
+                    document.body.removeChild(link); 
+                    window.URL.revokeObjectURL(url); 
+                }, 100);
+            } catch (err) { 
+                console.error("Export failed:", err); 
+            }
+        }
+
+        window.importData = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.activities || !data.payments) throw new Error("無效資料格式");
+                    if (confirm("匯入將會覆蓋當前所有紀錄，確定要繼續嗎？")) {
+                        activities = data.activities;
+                        payments = data.payments;
+                        hunterName = data.hunterName || "點擊輸入";
+                        updateHunterNameUI(); updateFilters(); renderUI();
+                        await cloudSave();
+                    }
+                } catch (err) { console.error("Import failed:", err); }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; 
+        };
+
+        function hideLoading() {
+            const loader = document.getElementById('loading-overlay');
+            if (loader) { 
+                loader.style.opacity = '0'; 
+                setTimeout(() => loader.style.display = 'none', 500); 
+            }
+        }
+
+        const PKG_LIMITED = [{id:'lim1',label:'禮包一',price:15,max:5},{id:'lim2',label:'禮包二',price:30,max:5},{id:'lim3',label:'禮包三',price:150,max:5},{id:'lim4',label:'禮包四',price:320,max:5},{id:'lim5',label:'禮包五',price:390,max:3},{id:'lim6',label:'禮包六',price:820,max:10},{id:'lim7',label:'禮包七',price:1690,max:1}];
+        const PKG_REVIVAL = [{id:'rev1',label:'禮包一',price:30,max:1},{id:'rev2',label:'禮包二',price:150,max:1},{id:'rev3',label:'禮包三',price:290,max:3},{id:'rev4',label:'禮包四',price:590,max:10}];
+        const CRYSTAL_SPEC = [{cry:60,p:30},{cry:300,p:150},{cry:450,p:220},{cry:980,p:490},{cry:1980,p:890},{cry:3280,p:1490},{cry:6480,p:2990}];
+        const ASSOC_SPEC = [{lv:10,p:30},{lv:15,p:150},{lv:20,p:220},{lv:25,p:320},{lv:30,p:490},{lv:35,p:590},{lv:40,p:890},{lv:50,p:1490},{lv:60,p:1790},{lv:65,p:2990}];
+
+        function initUI() {
+            const today = new Date();
+            document.getElementById('actDate').valueAsDate = today;
+            document.getElementById('topupDate').valueAsDate = today;
+
+            const renderPkgs = (list, tid, prefix) => {
+                const box = document.getElementById(tid);
+                if(!box) return; box.innerHTML = '';
+                list.forEach(p => {
+                    const limit = p.max || 99;
+                    box.innerHTML += `
+                        <div class="flex items-center justify-between p-4 bg-[#2c2e3a] rounded-2xl border border-white/5">
+                            <div class="flex flex-col"><span class="text-sm font-bold">${p.label}</span><span class="text-[10px] text-indigo-400">NT$ ${p.price}</span></div>
+                            <div class="flex items-center gap-3">
+                                <button class="max-btn" type="button" onclick="adjustLabelQty('${prefix + p.id}', ${limit})">MAX</button>
+                                <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg">
+                                    <button class="counter-btn" type="button" onclick="adjustLabelQty('${prefix + p.id}',-1,0,${limit})">-</button>
+                                    <span id="${prefix + p.id}" class="w-6 text-center text-sm font-bold">0</span>
+                                    <button class="counter-btn" type="button" onclick="adjustLabelQty('${prefix + p.id}',1,0,${limit})">+</button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            };
+            renderPkgs(PKG_LIMITED, 'list-limited', 'val_');
+            renderPkgs(PKG_REVIVAL, 'list-revival', 'val_');
+
+            const renderCrystalList = (containerId, prefix) => {
+                const box = document.getElementById(containerId);
+                if (!box) return; box.innerHTML = '';
+                CRYSTAL_SPEC.forEach(spec => {
+                    box.innerHTML += `
+                        <div class="crystal-row">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-white">${spec.cry} 晶鑽</span>
+                                <span class="text-[10px] text-indigo-400">NT$ ${spec.p}</span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg">
+                                <button class="counter-btn" type="button" onclick="adjustCrystalQty('${prefix}_qty_${spec.cry}', -1)">-</button>
+                                <input type="number" id="${prefix}_qty_${spec.cry}" value="0" min="0" class="w-10 text-center text-sm font-bold !bg-transparent border-none !p-0">
+                                <button class="counter-btn" type="button" onclick="adjustCrystalQty('${prefix}_qty_${spec.cry}', 1)">+</button>
+                            </div>
+                        </div>`;
+                });
+            };
+            renderCrystalList('act-crystal-list', 'act_cry');
+            renderCrystalList('general-crystal-list', 'gen_cry');
+
+            const s = document.getElementById('assocStart'); const e = document.getElementById('assocEnd');
+            ASSOC_SPEC.forEach((it, idx) => { const o = `<option value="${idx}">協會 Lv.${it.lv} ($${it.p})</option>`; s.innerHTML += o; e.innerHTML += o; });
+            s.onchange = e.onchange = () => {
+                const startIndex = parseInt(s.value); const endIndex = parseInt(e.value);
+                const sum = ASSOC_SPEC.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex)+1).reduce((a,b)=>a+b.p,0);
+                document.getElementById('assocPreview').innerText = `預計金額：NT$ ${sum.toLocaleString()}`;
+            };
+
+            document.querySelectorAll('.category-header').forEach(h => h.onclick = () => document.getElementById(h.dataset.target).classList.toggle('open'));
+            document.querySelectorAll('.check-item').forEach(item => {
+                item.onclick = () => {
+                    checkedStates[item.id] = !checkedStates[item.id];
+                    item.classList.toggle('active', checkedStates[item.id]);
+                    const iconWrapper = item.querySelector('div:last-child');
+                    if (iconWrapper) iconWrapper.classList.toggle('opacity-0', !checkedStates[item.id]);
+                };
+            });
+
+            document.getElementById('nav-activity').onclick = () => switchTab('activity');
+            document.getElementById('nav-topup').onclick = () => switchTab('topup');
+            document.getElementById('nav-analysis').onclick = () => switchTab('analysis');
+            document.getElementById('btn-submit-activity').onclick = addActivity;
+            document.getElementById('btn-submit-topup').onclick = addTopup;
+            
+            // 修正匯出按鈕的事件監聽
+            document.getElementById('btn-export').onclick = triggerExport;
+            
+            document.getElementById('btn-assoc-max').onclick = () => {
+                document.getElementById('assocStart').value = 0; document.getElementById('assocEnd').value = ASSOC_SPEC.length - 1;
+                document.getElementById('assocStart').onchange();
+            };
+            document.getElementById('totalTimeFilter').onchange = renderUI;
+            document.getElementById('activityFilter').onchange = () => { actCurrentPage = 1; renderUI(); };
+            document.getElementById('monthFilter').onchange = () => { payCurrentPage = 1; renderUI(); };
+            document.getElementById('analysisFilter').onchange = renderUI;
+
+            document.getElementById('actPrev').onclick = () => { if (actCurrentPage > 1) { actCurrentPage--; renderUI(); } };
+            document.getElementById('actNext').onclick = () => { actCurrentPage++; renderUI(); };
+            document.getElementById('payPrev').onclick = () => { if (payCurrentPage > 1) { payCurrentPage--; renderUI(); } };
+            document.getElementById('payNext').onclick = () => { payCurrentPage++; renderUI(); };
+
+            lucide.createIcons();
+            updateHunterNameUI();
+        }
+
+        async function addActivity() {
+            const nameEl = document.getElementById('actName'); const dateEl = document.getElementById('actDate');
+            const beforeEl = document.getElementById('actBefore'); const afterEl = document.getElementById('actAfter');
+            const name = nameEl.value.trim(); const date = dateEl.value;
+            const before = parseInt(beforeEl.value) || 0; const after = parseInt(afterEl.value) || 0;
+            const timestamp = Date.now();
+            if (!name || !date) return;
+            
+            activities.push({ id: 'act_' + timestamp, name, spent: Math.max(0, before - after), date, timestamp });
+            
+            [...PKG_LIMITED, ...PKG_REVIVAL].forEach(pkg => {
+                const el = document.getElementById('val_' + pkg.id);
+                if (el) {
+                    const q = parseInt(el.textContent || el.innerText) || 0;
+                    if (q > 0) { 
+                        payments.push({ id: 'p_'+Math.random(), date, type: pkg.label, amount: pkg.price*q, qty: q, ref: name, isPkg: true, timestamp }); 
+                        el.innerText = '0'; 
+                    }
+                }
+            });
+            CRYSTAL_SPEC.forEach(spec => {
+                const qy = document.getElementById(`act_cry_qty_${spec.cry}`);
+                if (qy) {
+                    const q = parseInt(qy.value) || 0;
+                    if (q > 0) { 
+                        payments.push({ id: 'p_'+Math.random(), date, type: '晶鑽儲值', amount: spec.p * q, qty: q, crystalVal: spec.cry, ref: name, timestamp }); 
+                        qy.value = '0'; 
+                    }
+                }
+            });
+            const oP = parseFloat(document.getElementById('otherPkgPrice').value) || 0;
+            if (oP > 0) {
+                payments.push({ id: 'p_'+Date.now(), date, type: '其他課金', amount: oP, qty: 1, ref: name, timestamp });
+                document.getElementById('otherPkgPrice').value = '';
+            }
+            const assocSumStr = document.getElementById('assocPreview').innerText.match(/\d+/);
+            const assocSum = assocSumStr ? parseInt(assocSumStr[0].replace(/,/g, '')) : 0;
+            if (assocSum > 0) {
+                payments.push({ id: 'p_'+Date.now(), date, type: '協會等級禮包', amount: assocSum, qty: 1, ref: name, timestamp });
+                document.getElementById('assocStart').value = 0; document.getElementById('assocEnd').value = 0;
+                document.getElementById('assocPreview').innerText = `預計金額：NT$ 0`;
+            }
+            
+            await cloudSave();
+            nameEl.value = ''; beforeEl.value = ''; afterEl.value = '';
+            actCurrentPage = 1; updateFilters(); renderUI();
+        }
+
+        async function addTopup() {
+            const date = document.getElementById('topupDate').value; 
+            const timestamp = Date.now();
+            if (!date) return;
+            let changed = false;
+            const mQtyEl = document.getElementById('qty_monthly'); const mQty = parseInt(mQtyEl.innerText);
+            if (mQty > 0) { payments.push({ id: 'p_'+Math.random(), date, type: '月卡', amount: 150*mQty, qty: mQty, ref: '一般儲值', timestamp }); mQtyEl.innerText = '0'; changed = true; }
+            const basicChecks = [{id: 'check_weekly', label: '週卡', price: 220}, {id: 'check_daily_rare', label: '每日限購(珍貴)', price: 15}, {id: 'check_daily_bright', label: '每日限購(璀璨)', price: 30}, {id: 'check_promise_special', label: '特別密約', price: 320}, {id: 'check_promise_upgrade', label: '升級版特別密約', price: 490}];
+            basicChecks.forEach(c => {
+                if (checkedStates[c.id]) {
+                    payments.push({ id: 'p_'+Math.random(), date, type: c.label, amount: c.price, qty: 1, ref: '一般儲值', timestamp });
+                    const el = document.getElementById(c.id); checkedStates[c.id] = false;
+                    if (el) { el.classList.remove('active'); const icon = el.querySelector('div:last-child'); if(icon) icon.classList.add('opacity-0'); }
+                    changed = true;
+                }
+            });
+            CRYSTAL_SPEC.forEach(spec => {
+                const qy = document.getElementById(`gen_cry_qty_${spec.cry}`);
+                if (qy) {
+                    const q = parseInt(qy.value) || 0;
+                    if (q > 0) { payments.push({ id: 'p_'+Math.random(), date, type: '晶鑽儲值', amount: spec.p * q, qty: q, crystalVal: spec.cry, ref: '一般儲值', timestamp }); qy.value = '0'; changed = true; }
+                }
+            });
+            if (changed) { payCurrentPage = 1; await cloudSave(); updateFilters(); renderUI(); }
+        }
+
+        function switchTab(t) {
+            document.getElementById('section-activity').classList.toggle('hidden', t !== 'activity');
+            document.getElementById('section-topup').classList.toggle('hidden', t !== 'topup');
+            document.getElementById('section-analysis').classList.toggle('hidden', t !== 'analysis');
+            document.getElementById('nav-activity').classList.toggle('tab-active', t === 'activity');
+            document.getElementById('nav-topup').classList.toggle('tab-active', t === 'topup');
+            document.getElementById('nav-analysis').classList.toggle('tab-active', t === 'analysis');
+        }
+
+        function updateFilters() {
+            const allActivityMonths = [...new Set(activities.map(a => a.date.substring(0, 7)))].sort().reverse();
+            const allPaymentMonths = [...new Set(payments.map(p => p.date.substring(0, 7)))].sort().reverse();
+            const allMonths = [...new Set([...allActivityMonths, ...allPaymentMonths])].sort().reverse();
+            const allYears = [...new Set([...activities, ...payments].map(i => i.date.substring(0, 4)))].sort().reverse();
+
+            const af = document.getElementById('activityFilter'); 
+            const curA = af.value;
+            af.innerHTML = '<option value="">顯示所有月份活動...</option>';
+            allYears.forEach(y => af.innerHTML += `<option value="year_${y}">${y} 年度紀錄</option>`);
+            allMonths.forEach(m => af.innerHTML += `<option value="${m}" ${curA===m?'selected':''}>${m}</option>`);
+
+            const mf = document.getElementById('monthFilter'); 
+            const curM = mf.value;
+            mf.innerHTML = '<option value="">顯示所有月份...</option>';
+            const genPayments = payments.filter(p => p.ref === '一般儲值');
+            const genYears = [...new Set(genPayments.map(p => p.date.substring(0, 4)))].sort().reverse();
+            const genMonths = [...new Set(genPayments.map(p => p.date.substring(0, 7)))].sort().reverse();
+            genYears.forEach(y => mf.innerHTML += `<option value="year_${y}">${y} 年度紀錄</option>`);
+            genMonths.forEach(m => mf.innerHTML += `<option value="${m}" ${curM===m?'selected':''}>${m}</option>`);
+
+            const anf = document.getElementById('analysisFilter'); 
+            const curAn = anf.value;
+            anf.innerHTML = '<option value="">選擇分析月份...</option>';
+            allMonths.forEach(m => anf.innerHTML += `<option value="${m}" ${curAn===m?'selected':''}>${m} 月度分析</option>`);
+
+            const tf = document.getElementById('totalTimeFilter'); 
+            const curT = tf.value;
+            tf.innerHTML = '<option value="all">所有時間</option>';
+            allYears.forEach(y => tf.innerHTML += `<option value="year_${y}">${y} 年度總計</option>`);
+            allMonths.forEach(m => tf.innerHTML += `<option value="month_${m}">${m}月 總計</option>`);
+            tf.value = curT || 'all';
+        }
+
+        function renderUI() {
+            const tfv = document.getElementById('totalTimeFilter').value;
+            let fP = payments;
+            if (tfv.startsWith('year_')) fP = payments.filter(p => p.date.startsWith(tfv.split('_')[1]));
+            else if (tfv.startsWith('month_')) fP = payments.filter(p => p.date.startsWith(tfv.split('_')[1]));
+            document.getElementById('totalP').innerText = fP.reduce((s,p)=>s+p.amount,0).toLocaleString();
+
+            const latest = activities.length > 0 ? [...activities].sort((a,b) => b.date.localeCompare(a.date) || b.timestamp - a.timestamp)[0] : null;
+            document.getElementById('recentActivity').innerText = latest ? latest.name : "尚未登錄";
+
+            const selA = document.getElementById('activityFilter').value;
+            const actList = document.getElementById('activityList');
+            const summaryBox = document.getElementById('monthActivitySummary');
+            actList.innerHTML = '';
+            
+            let filteredActs = activities;
+            if (selA.startsWith('year_')) filteredActs = activities.filter(a => a.date.startsWith(selA.split('_')[1]));
+            else if (selA) filteredActs = activities.filter(a => a.date.startsWith(selA));
+
+            if (selA && !selA.startsWith('year_')) {
+                summaryBox.classList.remove('hidden');
+                document.getElementById('monthSumDiamonds').innerText = filteredActs.reduce((s, a) => s + (a.spent || 0), 0).toLocaleString();
+                document.getElementById('monthSumCost').innerText = `NT$ ${payments.filter(p => p.date.startsWith(selA) && p.ref !== '一般儲值').reduce((s, p) => s + (p.amount || 0), 0).toLocaleString()}`;
+            } else summaryBox.classList.add('hidden');
+
+            const actDateGroups = filteredActs.reduce((acc, a) => {
+                if (!acc[a.date]) acc[a.date] = { date: a.date, totalSpent: 0, names: [] };
+                acc[a.date].totalSpent += (a.spent || 0); 
+                if(!acc[a.date].names.includes(a.name)) acc[a.date].names.push(a.name);
+                return acc;
+            }, {});
+
+            const sortedActDates = Object.keys(actDateGroups).sort().reverse();
+            const actTotalPages = Math.max(1, Math.ceil(sortedActDates.length / PAGE_SIZE));
+            const actPagedDates = sortedActDates.slice((actCurrentPage-1)*PAGE_SIZE, actCurrentPage*PAGE_SIZE);
+
+            actPagedDates.forEach(date => {
+                const group = actDateGroups[date];
+                const dayCosts = payments.filter(p => p.date === date && group.names.includes(p.ref)).reduce((s, p) => s + p.amount, 0);
+                const row = document.createElement('div');
+                row.className = 'glass-card p-6 border-l-4 border-indigo-500 flex flex-row items-center justify-between';
+                row.innerHTML = `<div class="flex flex-col gap-1 overflow-hidden flex-1"><span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 rounded-full font-bold w-fit">${date}</span><span class="text-sm font-bold truncate pr-2 text-white">${group.names.join('、')}</span><div class="flex flex-col gap-1 mt-1 text-[11px] text-[#9ba1ad]"><div>耗鑽：<span class="text-blue-400 font-bold">${group.totalSpent.toLocaleString()}</span></div><div>開銷：<span class="text-yellow-400 font-bold">NT$ ${dayCosts.toLocaleString()}</span></div></div></div><div class="flex gap-1 shrink-0 ml-4"><button class="p-1 text-red-400/50 hover:text-red-400" onclick="window.deleteActivityByDate('${date}')"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>`;
+                actList.appendChild(row);
+            });
+            document.getElementById('actPageInfo').innerText = `第 ${actCurrentPage} / ${actTotalPages} 頁`;
+            document.getElementById('actPrev').disabled = actCurrentPage <= 1;
+            document.getElementById('actNext').disabled = actCurrentPage >= actTotalPages;
+
+            const selPayM = document.getElementById('monthFilter').value;
+            const payList = document.getElementById('paymentList');
+            payList.innerHTML = '';
+            const generalPayments = payments.filter(p => p.ref === '一般儲值');
+            
+            if (selPayM) {
+                let monthPayments = generalPayments;
+                if (selPayM.startsWith('year_')) monthPayments = generalPayments.filter(p => p.date.startsWith(selPayM.split('_')[1]));
+                else monthPayments = generalPayments.filter(p => p.date.startsWith(selPayM));
+                
+                const aggregated = monthPayments.reduce((acc, p) => { if (!acc[p.type]) acc[p.type] = { type: p.type, totalAmount: 0, totalQty: 0 }; acc[p.type].totalAmount += p.amount; acc[p.type].totalQty += (p.qty || 1); return acc; }, {});
+                payList.innerHTML = `<div class="glass-card p-6 border-l-4 border-purple-500/50 flex flex-col gap-3"><div class="flex items-center justify-between border-b border-white/5 pb-2"><span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 rounded-full font-bold">匯整統計</span><span class="text-sm font-bold text-white">NT$ ${monthPayments.reduce((s,p)=>s+p.amount,0).toLocaleString()}</span></div><div class="space-y-4">${Object.values(aggregated).sort((a,b)=>b.totalAmount-a.totalAmount).map(item => `<div class="flex items-center justify-between"><span class="text-sm font-bold text-white">${item.type} * ${item.totalQty}</span><span class="text-xs text-dim">NT$ ${item.totalAmount.toLocaleString()}</span></div>`).join('')}</div></div>`;
+                document.getElementById('payPagination').style.display = 'none';
+            } else {
+                const payGrouped = generalPayments.reduce((groups, p) => { if (!groups[p.date]) groups[p.date] = []; groups[p.date].push(p); return groups; }, {});
+                const sortedPayDates = Object.keys(payGrouped).sort().reverse();
+                const payTotalPages = Math.max(1, Math.ceil(sortedPayDates.length / PAGE_SIZE));
+                const payPagedDates = sortedPayDates.slice((payCurrentPage-1)*PAGE_SIZE, payCurrentPage*PAGE_SIZE);
+                payPagedDates.forEach(date => {
+                    const dayTotal = payGrouped[date].reduce((sum, p) => sum + p.amount, 0);
+                    const row = document.createElement('div');
+                    row.className = 'glass-card p-6 border-l-4 border-purple-500/50 flex flex-col gap-3';
+                    row.innerHTML = `<div class="flex items-center justify-between border-b border-white/5 pb-2"><span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 rounded-full font-bold">${date}</span><span class="text-sm font-bold text-white">NT$ ${dayTotal.toLocaleString()}</span></div><div class="space-y-3">${payGrouped[date].map(p => `<div class="flex items-center justify-between"><span class="text-sm font-bold text-white">${p.type}${p.qty > 1 ? ' * '+p.qty : ''}</span><div class="flex items-center gap-3"><span class="text-xs text-dim">NT$ ${p.amount.toLocaleString()}</span><button class="p-1 text-red-400/30 hover:text-red-400" onclick="window.deletePayment('${p.id}')"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div></div>`).join('')}</div>`;
+                    payList.appendChild(row);
+                });
+                document.getElementById('payPageInfo').innerText = `第 ${payCurrentPage} / ${payTotalPages} 頁`;
+                document.getElementById('payPrev').disabled = payCurrentPage <= 1;
+                document.getElementById('payNext').disabled = payCurrentPage >= payTotalPages;
+                document.getElementById('payPagination').style.display = sortedPayDates.length > 0 ? 'flex' : 'none';
+            }
+
+            const selAnM = document.getElementById('analysisFilter').value;
+            const analysisContent = document.getElementById('analysisContent');
+            if (selAnM) {
+                const mP = payments.filter(p => p.date.startsWith(selAnM));
+                const mA = activities.filter(a => a.date.startsWith(selAnM));
+                const catSum = mP.reduce((acc, p) => { if (!acc[p.type]) acc[p.type] = { type: p.type, amount: 0, qty: 0 }; acc[p.type].amount += p.amount; acc[p.type].qty += (p.qty || 1); return acc; }, {});
+                const actSum = {};
+                mA.forEach(a => { if (!actSum[a.name]) actSum[a.name] = { name: a.name, diamonds: 0, cost: 0 }; actSum[a.name].diamonds += (a.spent || 0); });
+                mP.forEach(p => { if (p.ref !== '一般儲值') { if (!actSum[p.ref]) actSum[p.ref] = { name: p.ref, diamonds: 0, cost: 0 }; actSum[p.ref].cost += p.amount; } });
+                analysisContent.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="p-6 bg-white/5 rounded-3xl border border-white/5"><span class="text-[10px] text-dim uppercase tracking-widest font-bold block mb-1">分析區間支出</span><span class="text-2xl font-bold text-white">NT$ ${mP.reduce((s,p)=>s+p.amount, 0).toLocaleString()}</span></div><div class="p-6 bg-white/5 rounded-3xl border border-white/5"><span class="text-[10px] text-dim uppercase tracking-widest font-bold block mb-1">分析區間耗鑽</span><span class="text-2xl font-bold text-blue-400">${mA.reduce((s,a)=>s+a.spent, 0).toLocaleString()} <span class="text-xs">鑽</span></span></div></div><div class="glass-card p-6"><h4 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i> 項目類別統計</h4><div class="space-y-4">${Object.values(catSum).sort((a,b)=>b.amount-a.amount).map(item => `<div class="flex items-center justify-between"><div class="flex flex-col"><span class="text-sm font-bold text-white">${item.type}</span><span class="text-[10px] text-dim">數量: ${item.qty}</span></div><span class="text-sm text-dim">NT$ ${item.amount.toLocaleString()}</span></div>`).join('')}</div></div><div class="glass-card p-6"><h4 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> 活動細節分析</h4><div class="space-y-3">${Object.values(actSum).length > 0 ? Object.values(actSum).map(act => `<div class="p-4 bg-white/5 rounded-2xl border border-white/5"><div class="font-bold text-sm mb-2 text-white">${act.name}</div><div class="flex justify-between text-xs"><span class="text-blue-400">耗鑽: ${act.diamonds.toLocaleString()}</span><span class="text-yellow-400 font-bold">開銷: NT$ ${act.cost.toLocaleString()}</span></div></div>`).join('') : '<div class="text-center py-4 text-xs text-dim">此區間無活動紀錄</div>'}</div></div>`;
+            } else analysisContent.innerHTML = `<div class="text-center py-20 text-dim text-sm italic">請選擇月份以查看統計...</div>`;
+            lucide.createIcons();
+        }
+
+        window.deletePayment = async (id) => { payments = payments.filter(i => i.id !== id); await cloudSave(); updateFilters(); renderUI(); };
+        window.deleteActivityByDate = async (date) => {
+            const names = activities.filter(a => a.date === date).map(a => a.name);
+            activities = activities.filter(a => a.date !== date);
+            payments = payments.filter(p => !(p.date === date && names.includes(p.ref)));
+            await cloudSave(); updateFilters(); renderUI();
+        };
+
+        window.adjustLabelQty = (id, valOrDelta, min, max) => {
+            const el = document.getElementById(id); if(!el) return;
+            if (min !== undefined) { let v = parseInt(el.innerText) + valOrDelta; if (v >= min && v <= max) el.innerText = v; }
+            else el.innerText = valOrDelta;
+        };
+        window.adjustQty = (id, d) => {
+            const el = document.getElementById(id); if(!el) return;
+            let v = parseInt(el.innerText) + d; if (v >= 0) el.innerText = v;
+        };
+        window.adjustCrystalQty = (id, d) => {
+            const el = document.getElementById(id); if(!el) return;
+            let v = (parseInt(el.value) || 0) + d; if (v >= 0) el.value = v;
+        };
+
+        initUI();
+    </script>
+</body>
+</html>
