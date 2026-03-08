@@ -1239,16 +1239,21 @@ const newAssoc = assocAmount > 0 ? assocAmount : null;
 const newOther = parseInt(document.getElementById('edit_otherAmount')?.value)||0;
 
 const savedPayments = payments.filter(p => p.date === oldDate && oldNames.includes(p.ref));
-const changedLimited = JSON.stringify(newLimited) !== JSON.stringify(savedPayments.filter(p=>limitedLabels.includes(p.type)&&p.pkgType==='limited').map(p=>({label:p.type,qty:p.qty,price:p.amount/p.qty})));
-const changedRevival = JSON.stringify(newRevival) !== JSON.stringify(savedPayments.filter(p=>revivalLabels.includes(p.type)&&p.pkgType==='revival').map(p=>({label:p.type,qty:p.qty,price:p.amount/p.qty})));
-const changedCrystal = JSON.stringify(newCrystal.map(x=>({cry:x.cry,qty:x.qty}))) !== JSON.stringify(savedPayments.filter(p=>p.type==='晶鑽儲值').map(p=>({cry:p.crystalVal,qty:p.qty})));
-const changedAssoc = newAssoc !== (savedPayments.find(p=>p.type==='協會等級禮包')?.amount || null);
-const changedOther = newOther !== (savedPayments.find(p=>p.type==='其他課金')?.amount || 0);
+const limitedCatOpen = document.getElementById('edit-cat-limited')?.classList.contains('open');
+const changedLimited = limitedCatOpen && JSON.stringify(newLimited) !== JSON.stringify(savedPayments.filter(p=>limitedLabels.includes(p.type)&&p.pkgType==='limited').map(p=>({label:p.type,qty:p.qty,price:p.amount/p.qty})));
+const revivalCatOpen = document.getElementById('edit-cat-revival')?.classList.contains('open');
+const changedRevival = revivalCatOpen && JSON.stringify(newRevival) !== JSON.stringify(savedPayments.filter(p=>revivalLabels.includes(p.type)&&p.pkgType==='revival').map(p=>({label:p.type,qty:p.qty,price:p.amount/p.qty})));
+const crystalCatOpen = document.getElementById('edit-cat-crystal')?.classList.contains('open');
+const changedCrystal = crystalCatOpen && JSON.stringify(newCrystal.map(x=>({cry:x.cry,qty:x.qty}))) !== JSON.stringify(savedPayments.filter(p=>p.type==='晶鑽儲值').map(p=>({cry:p.crystalVal,qty:p.qty})));
+const assocCatOpen = document.getElementById('edit-cat-assoc')?.classList.contains('open');
+const changedAssoc = assocCatOpen && newAssoc !== (savedPayments.find(p=>p.type==='協會等級禮包')?.amount || null);
+const otherCatOpen = document.getElementById('edit-cat-other')?.classList.contains('open');
+const changedOther = otherCatOpen && newOther !== (savedPayments.find(p=>p.type==='其他課金')?.amount || 0);
 
 payments = payments.filter(p => {
     if (!(p.date === oldDate && oldNames.includes(p.ref))) return true;
-    if (changedLimited && limitedLabels.includes(p.type)) return false;
-    if (changedRevival && revivalLabels.includes(p.type)) return false;
+    if (changedLimited && limitedLabels.includes(p.type) && p.pkgType === 'limited') return false;
+    if (changedRevival && revivalLabels.includes(p.type) && p.pkgType === 'revival') return false;
     if (changedCrystal && p.type === '晶鑽儲值') return false;
     if (changedAssoc && p.type === '協會等級禮包') return false;
     if (changedOther && p.type === '其他課金') return false;
@@ -1259,12 +1264,12 @@ payments = payments.filter(p => {
 
        if (changedLimited) PKG_LIMITED.forEach(pkg => {
             const el = document.getElementById('edit_val_' + pkg.id);
-            if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,isPkg:true,timestamp:ts}); }
+            if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,pkgType:'limited',timestamp:ts}); }
         });
 
         if (changedRevival) PKG_REVIVAL.forEach(pkg => {
             const el = document.getElementById('edit_val_' + pkg.id);
-            if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,isPkg:true,timestamp:ts}); }
+            if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,pkgType:'revival',timestamp:ts}); }
         });
 
         if (changedCrystal) CRYSTAL_SPEC.forEach(spec => {
