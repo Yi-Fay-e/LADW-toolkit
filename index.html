@@ -503,22 +503,34 @@
             </div>
         </div>
     </div>
+<div id="editModal">
+    <div class="glass-card p-8 w-full max-w-md shadow-2xl" style="max-height:90vh; overflow-y:auto;">
+        <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+            <i data-lucide="pencil"></i> 編輯紀錄
+        </h3>
+        <div class="space-y-4" id="editModalFields"></div>
+        <div class="flex gap-4 mt-8">
+            <button onclick="closeEditModal()" class="w-full py-3 bg-white/5 rounded-xl font-bold">取消</button>
+            <button onclick="saveEdit()" class="w-full py-3 bg-indigo-500 rounded-xl font-bold text-white">儲存</button>
+        </div>
+    </div>
+</div>
 
-    <div id="nameModal">
-        <div class="glass-card p-8 w-full max-sm shadow-2xl">
-            <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><i data-lucide="user-round-pen"></i> 更改獵人名稱</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold">請輸入名稱</label>
-                    <input type="text" id="inputHunterName" placeholder="例如：苡菲" class="w-full">
-                </div>
+<div id="nameModal">
+    <div class="glass-card p-8 w-full max-sm shadow-2xl">
+        <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><i data-lucide="user-round-pen"></i> 更改獵人名稱</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold">請輸入名稱</label>
+                <input type="text" id="inputHunterName" placeholder="例如：苡菲" class="w-full">
             </div>
+        </div>
             <div class="flex gap-4 mt-8">
                 <button onclick="closeNameModal()" class="w-full py-3 bg-white/5 rounded-xl font-bold">取消</button>
                 <button onclick="saveHunterName()" class="w-full py-3 bg-indigo-500 rounded-xl font-bold text-white">儲存</button>
             </div>
-        </div>
     </div>
+</div>
 
     <script>
         // 本地存儲 Logic 替換原本的 Firebase Logic
@@ -693,8 +705,8 @@
                 list.forEach(p => {
                     const limit = p.max || 99;
                     box.innerHTML += `
-                        <div class="flex items-center justify-between p-4 bg-[#2c2e3a] rounded-2xl border border-white/5">
-                            <div class="flex flex-col"><span class="text-sm font-bold">${p.label}</span><span class="text-[10px] text-indigo-400">NT$ ${p.price}</span></div>
+                        <div class="flex items-center justify-between p-4 rounded-2xl border border-white/5" style="background:#2c2e3a;">
+                            <div class="flex flex-col"><span class="text-sm font-bold">${p.label}</span><span style="font-size:10px;color:#818cf8;">NT$ ${p.price}</span></div>
                             <div class="flex items-center gap-3">
                                 <button class="max-btn" type="button" onclick="adjustLabelQty('${prefix + p.id}', ${limit})">MAX</button>
                                 <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg">
@@ -783,12 +795,22 @@
             
             activities.push({ id: 'act_' + timestamp, name, spent: Math.max(0, before - after), date, timestamp });
             
-            [...PKG_LIMITED, ...PKG_REVIVAL].forEach(pkg => {
+            PKG_LIMITED.forEach(pkg => {
                 const el = document.getElementById('val_' + pkg.id);
                 if (el) {
                     const q = parseInt(el.textContent || el.innerText) || 0;
                     if (q > 0) { 
-                        payments.push({ id: 'p_'+Math.random(), date, type: pkg.label, amount: pkg.price*q, qty: q, ref: name, isPkg: true, timestamp }); 
+                        payments.push({ id: 'p_'+Math.random(), date, type: pkg.label, amount: pkg.price*q, qty: q, ref: name, pkgType: 'limited', timestamp }); 
+                        el.innerText = '0'; 
+                    }
+                }
+            });
+            PKG_REVIVAL.forEach(pkg => {
+                const el = document.getElementById('val_' + pkg.id);
+                if (el) {
+                    const q = parseInt(el.textContent || el.innerText) || 0;
+                    if (q > 0) { 
+                        payments.push({ id: 'p_'+Math.random(), date, type: pkg.label, amount: pkg.price*q, qty: q, ref: name, pkgType: 'revival', timestamp }); 
                         el.innerText = '0'; 
                     }
                 }
@@ -931,7 +953,7 @@
                 const dayCosts = payments.filter(p => p.date === date && group.names.includes(p.ref)).reduce((s, p) => s + p.amount, 0);
                 const row = document.createElement('div');
                 row.className = 'glass-card p-6 border-l-4 border-indigo-500 flex flex-row items-center justify-between';
-                row.innerHTML = `<div class="flex flex-col gap-1 overflow-hidden flex-1"><span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 rounded-full font-bold w-fit">${date}</span><span class="text-sm font-bold truncate pr-2 text-white">${group.names.join('、')}</span><div class="flex flex-col gap-1 mt-1 text-[11px] text-[#9ba1ad]"><div>耗鑽：<span class="text-blue-400 font-bold">${group.totalSpent.toLocaleString()}</span></div><div>開銷：<span class="text-yellow-400 font-bold">NT$ ${dayCosts.toLocaleString()}</span></div></div></div><div class="flex gap-1 shrink-0 ml-4"><button class="p-1 text-red-400/50 hover:text-red-400" onclick="window.deleteActivityByDate('${date}')"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>`;
+                row.innerHTML = `<div class="flex flex-col gap-1 overflow-hidden flex-1"><span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 rounded-full font-bold w-fit">${date}</span><span class="text-sm font-bold truncate pr-2 text-white">${group.names.join('、')}</span><div class="flex flex-col gap-1 mt-1 text-[11px] text-[#9ba1ad]"><div>耗鑽：<span class="text-blue-400 font-bold">${group.totalSpent.toLocaleString()}</span></div><div>開銷：<span class="text-yellow-400 font-bold">NT$ ${dayCosts.toLocaleString()}</span></div></div></div><div class="flex gap-1 shrink-0 ml-4"><button class="p-1 text-indigo-400/50 hover:text-indigo-400" onclick="window.openEditActivity('${date}')"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button><button class="p-1 text-red-400/50 hover:text-red-400" onclick="window.deleteActivityByDate('${date}')"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>`;
                 actList.appendChild(row);
             });
             document.getElementById('actPageInfo').innerText = `第 ${actCurrentPage} / ${actTotalPages} 頁`;
@@ -960,7 +982,8 @@
                     const dayTotal = payGrouped[date].reduce((sum, p) => sum + p.amount, 0);
                     const row = document.createElement('div');
                     row.className = 'glass-card p-6 border-l-4 border-purple-500/50 flex flex-col gap-3';
-                    row.innerHTML = `<div class="flex items-center justify-between border-b border-white/5 pb-2"><span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 rounded-full font-bold">${date}</span><span class="text-sm font-bold text-white">NT$ ${dayTotal.toLocaleString()}</span></div><div class="space-y-3">${payGrouped[date].map(p => `<div class="flex items-center justify-between"><span class="text-sm font-bold text-white">${p.type}${p.qty > 1 ? ' * '+p.qty : ''}</span><div class="flex items-center gap-3"><span class="text-xs text-dim">NT$ ${p.amount.toLocaleString()}</span><button class="p-1 text-red-400/30 hover:text-red-400" onclick="window.deletePayment('${p.id}')"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div></div>`).join('')}</div>`;
+                    row.innerHTML = `<div class="flex items-center justify-between border-b border-white/5 pb-2"><span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 rounded-full font-bold">${date}</span><span class="text-sm font-bold text-white">NT$ ${dayTotal.toLocaleString()}</span></div><div class="space-y-3">${payGrouped[date].map(p => `<div class="flex items-center justify-between"><span class="text-sm font-bold text-white">${p.type}${p.qty > 1 ? ' * '+p.qty : ''}</span><div class="flex items-center gap-3"><span class="text-xs text-dim">NT$ ${p.amount.toLocaleString()}</span>
+<button class="p-1 text-indigo-400/30 hover:text-indigo-400" onclick="window.openEditPayment('${p.id}')"><i data-lucide="pencil" class="w-3 h-3"></i></button><button class="p-1 text-red-400/30 hover:text-red-400" onclick="window.deletePayment('${p.id}')"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div></div>`).join('')}</div>`;
                     payList.appendChild(row);
                 });
                 document.getElementById('payPageInfo').innerText = `第 ${payCurrentPage} / ${payTotalPages} 頁`;
@@ -983,6 +1006,312 @@
             lucide.createIcons();
         }
 
+let editTarget = null;
+
+window.closeEditModal = () => {
+    document.getElementById('editModal').style.display = 'none';
+    editTarget = null;
+};
+
+function renderEditCrystalList(prefix, existingPayments) {
+    let html = '';
+    CRYSTAL_SPEC.forEach(spec => {
+        const match = existingPayments.find(p => p.crystalVal === spec.cry);
+        const qty = match ? match.qty : 0;
+        html += `
+            <div class="crystal-row">
+                <div class="flex flex-col">
+                    <span class="text-sm font-bold text-white">${spec.cry} 晶鑽</span>
+                    <span style="font-size:10px;color:#818cf8;">NT$ ${spec.p}</span>
+                </div>
+                <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg">
+                    <button class="counter-btn" type="button" onclick="adjustCrystalQty('${prefix}_qty_${spec.cry}', -1)">-</button>
+                    <input type="number" id="${prefix}_qty_${spec.cry}" value="${qty}" min="0" style="width:40px !important;text-align:center !important;font-weight:bold;background:transparent !important;border:none !important;padding:0 !important;color:white;appearance:textfield;-moz-appearance:textfield;" onwheel="this.blur()">
+                    <button class="counter-btn" type="button" onclick="adjustCrystalQty('${prefix}_qty_${spec.cry}', 1)">+</button>
+                </div>
+            </div>`;
+    });
+    return html;
+}
+
+function renderEditPkgList(list, existingPayments, pkgType) {
+    let html = '';
+    list.forEach(p => {
+        const match = existingPayments.find(pay => pay.type === p.label && pay.pkgType === pkgType);
+        const qty = match ? match.qty : 0;
+        const limit = p.max || 99;
+        html += `
+            <div class="flex items-center justify-between p-4 bg-[#2c2e3a] rounded-2xl border border-white/5">
+                <div class="flex flex-col">
+                    <span class="text-sm font-bold">${p.label}</span>
+                    <span style="font-size:10px;color:#818cf8;">NT$ ${p.price}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="max-btn" type="button" onclick="adjustLabelQty('edit_val_${p.id}', ${limit})">MAX</button>
+                    <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg">
+                        <button class="counter-btn" type="button" onclick="adjustLabelQty('edit_val_${p.id}',-1,0,${limit})">-</button>
+                        <span id="edit_val_${p.id}" class="w-6 text-center text-sm font-bold">${qty}</span>
+                        <button class="counter-btn" type="button" onclick="adjustLabelQty('edit_val_${p.id}',1,0,${limit})">+</button>
+                    </div>
+                </div>
+            </div>`;
+    });
+    return html;
+}
+
+window.openEditActivity = (date) => {
+    const acts = activities.filter(a => a.date === date);
+    if (acts.length === 0) return;
+    const oldNames = acts.map(a => a.name);
+    const relatedPayments = payments.filter(p => p.date === date && oldNames.includes(p.ref));
+    const assocPkg = relatedPayments.find(p => p.type === '協會等級禮包');
+    const otherPkg = relatedPayments.find(p => p.type === '其他課金');
+
+    editTarget = { type: 'activity', date };
+
+    document.getElementById('editModalFields').innerHTML = `
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">活動名稱</label>
+            <input type="text" id="edit_actName" value="${acts.map(a => a.name).join('、')}" class="w-full">
+        </div>
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">活動日期</label>
+            <input type="date" id="edit_actDate" value="${date}" class="w-full">
+        </div>
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">消耗紅鑽（前 - 後）</label>
+            <div class="flex gap-4">
+                <input type="number" id="edit_actBefore" placeholder="抽卡前數量" value="${acts.reduce((s,a)=>s+(a.spent||0),0)}" class="w-full">
+                <input type="number" id="edit_actAfter" placeholder="抽卡後數量" value="0" class="w-full">
+            </div>
+        </div>
+        <div>
+            <div class="category-header" onclick="document.getElementById('edit-cat-limited').classList.toggle('open')">
+                <span class="font-bold text-sm">限定禮包</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+            </div>
+            <div id="edit-cat-limited" class="category-content">
+                <div class="grid grid-cols-1 gap-2 py-2">${renderEditPkgList(PKG_LIMITED, relatedPayments, 'limited')}</div>
+            </div>
+            <div class="category-header" onclick="document.getElementById('edit-cat-revival').classList.toggle('open')">
+                <span class="font-bold text-sm">復刻禮包</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+            </div>
+            <div id="edit-cat-revival" class="category-content">
+                <div class="grid grid-cols-1 gap-2 py-2">${renderEditPkgList(PKG_REVIVAL, relatedPayments, 'revival')}</div>
+            </div>
+            <div class="category-header" onclick="document.getElementById('edit-cat-crystal').classList.toggle('open')">
+                <span class="font-bold text-sm">晶鑽儲值</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+            </div>
+            <div id="edit-cat-crystal" class="category-content">
+                <div class="space-y-2 py-2">${renderEditCrystalList('edit_act_cry', relatedPayments)}</div>
+            </div>
+            <div class="category-header" onclick="document.getElementById('edit-cat-assoc').classList.toggle('open')">
+                <span class="font-bold text-sm">協會禮包</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+            </div>
+            <div id="edit-cat-assoc" class="category-content">
+                <div class="bg-[#2c2e3a] p-5 rounded-2xl space-y-6 border border-white/5 my-2">
+                    <div class="space-y-4">
+                        <div><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">起始等級</label><select id="edit_assocStart" class="text-sm rounded-xl w-full"></select></div>
+                        <div><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">結束等級</label><select id="edit_assocEnd" class="text-sm rounded-xl w-full"></select></div>
+                    </div>
+                    <button type="button" id="edit_btn_assoc_max" class="w-full text-xs bg-white/5 text-[#e4e6eb] py-3 rounded-xl">全選區間</button>
+                    <div id="edit_assocPreview" class="text-right text-sm text-indigo-400 font-bold">預計金額：NT$ 0</div>
+                </div>
+            </div>
+            <div class="category-header" onclick="document.getElementById('edit-cat-other').classList.toggle('open')">
+                <span class="font-bold text-sm">其他課金</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+            </div>
+            <div id="edit-cat-other" class="category-content">
+                <div class="bg-[#2c2e3a] p-5 rounded-2xl space-y-4 border border-white/5 my-2">
+                    <label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">金額 (NT$)</label>
+                    <input type="number" id="edit_otherAmount" value="${otherPkg ? otherPkg.amount : 0}" class="w-full text-sm">
+                </div>
+            </div>
+        </div>
+    `;
+    const es = document.getElementById('edit_assocStart');
+const ee = document.getElementById('edit_assocEnd');
+if (es && ee) {
+    es.innerHTML = ''; ee.innerHTML = '';
+    ASSOC_SPEC.forEach((it, idx) => {
+        const o = `<option value="${idx}">協會 Lv.${it.lv} ($${it.p})</option>`;
+        es.innerHTML += o; ee.innerHTML += o;
+    });
+    if (assocPkg && assocPkg.amount > 0) {
+        document.getElementById('edit_assocPreview').innerText = `預計金額：NT$ ${assocPkg.amount.toLocaleString()}`;
+    }
+    const calcAssoc = () => {
+        const si = parseInt(es.value); const ei = parseInt(ee.value);
+        const sum = ASSOC_SPEC.slice(Math.min(si,ei), Math.max(si,ei)+1).reduce((a,b)=>a+b.p,0);
+        document.getElementById('edit_assocPreview').innerText = `預計金額：NT$ ${sum.toLocaleString()}`;
+    };
+    es.onchange = ee.onchange = calcAssoc;
+    document.getElementById('edit_btn_assoc_max').onclick = () => {
+        es.value = 0; ee.value = ASSOC_SPEC.length - 1; calcAssoc();
+    };
+}
+    document.getElementById('editModal').style.display = 'flex';
+    lucide.createIcons();
+};
+
+window.openEditPayment = (id) => {
+    const p = payments.find(x => x.id === id);
+    if (!p) return;
+    editTarget = { type: 'payment', id };
+
+    const isMonthly = p.type === '月卡';
+    const isCrystal = p.type === '晶鑽儲值';
+    const isCheck = ['週卡','每日限購(珍貴)','每日限購(璀璨)','特別密約','升級版特別密約'].includes(p.type);
+
+    let fieldsHtml = `
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">購買日期</label>
+            <input type="date" id="edit_payDate" value="${p.date}" class="w-full">
+        </div>
+        <div class="p-3 bg-white/5 rounded-xl text-xs text-[#9ba1ad]">類型：<span class="text-white font-bold">${p.type}</span></div>
+    `;
+
+    if (isMonthly) {
+        fieldsHtml += `
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">月卡數量</label>
+            <div class="flex items-center gap-4 p-4 bg-[#252833] rounded-2xl">
+                <button class="counter-btn" type="button" onclick="adjustQty('edit_pay_qty', -1)">-</button>
+                <span id="edit_pay_qty" class="w-6 text-center text-sm font-bold">${p.qty || 1}</span>
+                <button class="counter-btn" type="button" onclick="adjustQty('edit_pay_qty', 1)">+</button>
+                <span class="text-xs text-[#9ba1ad]">× NT$ 150</span>
+            </div>
+        </div>`;
+    } else if (isCrystal) {
+        fieldsHtml += `
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">晶鑽儲值</label>
+            <div class="space-y-2">${renderEditCrystalList('edit_gen_cry', [p])}</div>
+        </div>`;
+    } else {
+        fieldsHtml += `
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">金額 (NT$)</label>
+            <input type="number" id="edit_payAmount" value="${p.amount}" class="w-full">
+        </div>
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">數量</label>
+            <input type="number" id="edit_payQty" value="${p.qty || 1}" class="w-full">
+        </div>`;
+    }
+
+    document.getElementById('editModalFields').innerHTML = fieldsHtml;
+    document.getElementById('editModal').style.display = 'flex';
+    lucide.createIcons();
+};
+
+window.saveEdit = () => {
+    if (!editTarget) return;
+
+    if (editTarget.type === 'activity') {
+        const newDate = document.getElementById('edit_actDate').value;
+        const newName = document.getElementById('edit_actName').value.trim();
+        const before = parseInt(document.getElementById('edit_actBefore').value) || 0;
+        const after = parseInt(document.getElementById('edit_actAfter').value) || 0;
+        const newSpent = Math.max(0, before - after);
+        const oldDate = editTarget.date;
+        const oldNames = activities.filter(a => a.date === oldDate).map(a => a.name);
+
+        activities = activities.map(a => {
+            if (a.date === oldDate) return { ...a, name: newName, date: newDate, spent: newSpent };
+            return a;
+        });
+
+const assocPreviewStr = document.getElementById('edit_assocPreview') ? document.getElementById('edit_assocPreview').innerText.replace(/,/g,'').match(/\d+/) : null;
+const assocAmount = assocPreviewStr ? parseInt(assocPreviewStr[0]) : 0;
+        
+        const limitedLabels = PKG_LIMITED.map(p => p.label);
+const revivalLabels = PKG_REVIVAL.map(p => p.label);
+
+const newLimited = PKG_LIMITED.map(pkg => ({ label: pkg.label, qty: parseInt(document.getElementById('edit_val_'+pkg.id)?.innerText)||0, price: pkg.price })).filter(x => x.qty > 0);
+const newRevival = PKG_REVIVAL.map(pkg => ({ label: pkg.label, qty: parseInt(document.getElementById('edit_val_'+pkg.id)?.innerText)||0, price: pkg.price })).filter(x => x.qty > 0);
+const newCrystal = CRYSTAL_SPEC.map(spec => ({ cry: spec.cry, qty: parseInt(document.getElementById(`edit_act_cry_qty_${spec.cry}`)?.value)||0, price: spec.p })).filter(x => x.qty > 0);
+const newAssoc = assocAmount > 0 ? assocAmount : null;
+const newOther = parseInt(document.getElementById('edit_otherAmount')?.value)||0;
+
+const savedPayments = payments.filter(p => p.date === oldDate && oldNames.includes(p.ref));
+const changedLimited = JSON.stringify(newLimited) !== JSON.stringify(savedPayments.filter(p=>limitedLabels.includes(p.type)&&p.pkgType==='limited').map(p=>({label:p.type,qty:p.qty,price:p.amount/p.qty})));
+const changedRevival = JSON.stringify(newRevival) !== JSON.stringify(savedPayments.filter(p=>revivalLabels.includes(p.type)&&p.pkgType==='revival').map(p=>({label:p.type,qty:p.qty,price:p.amount/p.qty})));
+const changedCrystal = JSON.stringify(newCrystal.map(x=>({cry:x.cry,qty:x.qty}))) !== JSON.stringify(savedPayments.filter(p=>p.type==='晶鑽儲值').map(p=>({cry:p.crystalVal,qty:p.qty})));
+const changedAssoc = newAssoc !== (savedPayments.find(p=>p.type==='協會等級禮包')?.amount || null);
+const changedOther = newOther !== (savedPayments.find(p=>p.type==='其他課金')?.amount || 0);
+
+payments = payments.filter(p => {
+    if (!(p.date === oldDate && oldNames.includes(p.ref))) return true;
+    if (changedLimited && limitedLabels.includes(p.type)) return false;
+    if (changedRevival && revivalLabels.includes(p.type)) return false;
+    if (changedCrystal && p.type === '晶鑽儲值') return false;
+    if (changedAssoc && p.type === '協會等級禮包') return false;
+    if (changedOther && p.type === '其他課金') return false;
+    return true;
+});
+
+        const ts = Date.now();
+
+       if (changedLimited) PKG_LIMITED.forEach(pkg => {
+            const el = document.getElementById('edit_val_' + pkg.id);
+            if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,isPkg:true,timestamp:ts}); }
+        });
+
+        if (changedRevival) PKG_REVIVAL.forEach(pkg => {
+            const el = document.getElementById('edit_val_' + pkg.id);
+            if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,isPkg:true,timestamp:ts}); }
+        });
+
+        if (changedCrystal) CRYSTAL_SPEC.forEach(spec => {
+            const el = document.getElementById(`edit_act_cry_qty_${spec.cry}`);
+            if (el) { const q = parseInt(el.value)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:'晶鑽儲值',amount:spec.p*q,qty:q,crystalVal:spec.cry,ref:newName,timestamp:ts}); }
+        });
+
+        if (changedAssoc && assocAmount > 0) payments.push({id:'p_'+Math.random(),date:newDate,type:'協會等級禮包',amount:assocAmount,qty:1,ref:newName,timestamp:ts});
+        if (changedOther && newOther > 0) payments.push({id:'p_'+Math.random(),date:newDate,type:'其他課金',amount:newOther,qty:1,ref:newName,timestamp:ts});
+
+    } else if (editTarget.type === 'payment') {
+        const id = editTarget.id;
+        const p = payments.find(x => x.id === id);
+        if (!p) return;
+        const newDate = document.getElementById('edit_payDate').value;
+
+        if (p.type === '月卡') {
+            const qty = parseInt(document.getElementById('edit_pay_qty').innerText) || 1;
+            payments = payments.map(x => x.id === id ? { ...x, date: newDate, qty, amount: 150 * qty } : x);
+        } else if (p.type === '晶鑽儲值') {
+            let found = false;
+            CRYSTAL_SPEC.forEach(spec => {
+                const el = document.getElementById(`edit_gen_cry_qty_${spec.cry}`);
+                if (el) {
+                    const q = parseInt(el.value) || 0;
+                    if (q > 0 && !found) {
+                        payments = payments.map(x => x.id === id ? { ...x, date: newDate, crystalVal: spec.cry, amount: spec.p * q, qty: q } : x);
+                        found = true;
+                    }
+                }
+            });
+        } else {
+            const amountEl = document.getElementById('edit_payAmount');
+            const qtyEl = document.getElementById('edit_payQty');
+            const amount = amountEl ? parseInt(amountEl.value) || 0 : p.amount;
+            const qty = qtyEl ? parseInt(qtyEl.value) || 1 : p.qty;
+            payments = payments.map(x => x.id === id ? { ...x, date: newDate, amount, qty } : x);
+        }
+    }
+
+    closeEditModal();
+    localSave();
+    updateFilters();
+    renderUI();
+};
+
+// ===== [新增] 編輯功能區塊 結束 =====
         window.deletePayment = (id) => { 
             payments = payments.filter(i => i.id !== id); 
             localSave(); updateFilters(); renderUI(); 
