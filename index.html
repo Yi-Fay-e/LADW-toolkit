@@ -24,7 +24,7 @@
             color: var(--text-main);
             font-family: 'Noto Sans TC', sans-serif;
             min-height: 100vh;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.5px;else if (editTarget.type === 'payment')
         }
 
         .glass-card {
@@ -138,15 +138,17 @@
         }
 
         .category-header {
-            background: #252833;
-            padding: 16px;
-            border-radius: 16px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
+    background: #252833;
+    padding: 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
         
         .category-content {
             padding: 0 4px;
@@ -253,6 +255,31 @@
             color: var(--text-dim);
             font-weight: bold;
         }
+    .paymethod-btn {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.paymethod-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+.active-cash {
+    background: rgba(251,191,36,0.3);
+    border-color: #fbbf24;
+    color: #fbbf24;
+}
+.active-mycard {
+    background: rgba(251,191,36,0.3);
+    border-color: #fbbf24;
+    color: #fbbf24;
+}
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -323,7 +350,8 @@
                         <div class="grid grid-cols-1 gap-6">
                             <div>
                                 <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">活動名稱</label>
-                                <input type="text" id="actName" placeholder="例如：人間繾綣意..." class="w-full">
+                                <input type="text" id="actName" placeholder="例如：人間繾綣意..." class="w-full" list="actNameList" autocomplete="off">
+<datalist id="actNameList"></datalist>
                             </div>
                             <div>
                                 <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">活動日期</label>
@@ -340,27 +368,65 @@
 
                         <div class="pt-4">
                             <div class="category-header" data-target="cat-limited">
-                                <span class="font-bold text-sm">限定禮包</span>
-                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
-                            </div>
+    <span class="font-bold text-sm">限定禮包</span>
+    <div class="flex items-center gap-2">
+        <div class="flex flex-col gap-1 items-end" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-2">
+                <button type="button" id="pool_limited_single_day" class="paymethod-btn" onclick="setPoolType('limited','limited_single_day')">單人日</button>
+                <button type="button" id="pool_limited_single_month" class="paymethod-btn" onclick="setPoolType('limited','limited_single_month')">單人月</button>
+                <button type="button" id="pool_limited_multi" class="paymethod-btn" onclick="setPoolType('limited','limited_multi')">混池</button>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" id="pay_limited_cash" class="paymethod-btn active-cash" onclick="setPayMethod('limited','cash')">現金</button>
+                <button type="button" id="pay_limited_mycard" class="paymethod-btn" onclick="setPayMethod('limited','mycard')">點數</button>
+            </div>
+        </div>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+    </div>
+</div>
                             <div id="cat-limited" class="category-content"><div id="list-limited" class="grid grid-cols-1 gap-2 py-2"></div></div>
 
                             <div class="category-header" data-target="cat-revival">
-                                <span class="font-bold text-sm">復刻禮包</span>
-                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
-                            </div>
+    <span class="font-bold text-sm">復刻禮包</span>
+    <div class="flex items-center gap-2">
+        <div class="flex flex-col gap-1 items-end" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-2">
+                <button type="button" id="pool_revival_single_day" class="paymethod-btn" onclick="setPoolType('revival','revival_single_day')">單人日</button>
+                <button type="button" id="pool_revival_single_month" class="paymethod-btn" onclick="setPoolType('revival','revival_single_month')">單人月</button>
+                <button type="button" id="pool_revival_multi" class="paymethod-btn" onclick="setPoolType('revival','revival_multi')">混池</button>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" id="pay_revival_cash" class="paymethod-btn active-cash" onclick="setPayMethod('revival','cash')">現金</button>
+                <button type="button" id="pay_revival_mycard" class="paymethod-btn" onclick="setPayMethod('revival','mycard')">點數</button>
+            </div>
+        </div>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+    </div>
+</div>
                             <div id="cat-revival" class="category-content"><div id="list-revival" class="grid grid-cols-1 gap-2 py-2"></div></div>
 
                             <div class="category-header" data-target="cat-crystal">
-                                <span class="font-bold text-sm">晶鑽儲值</span>
-                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
-                            </div>
+    <span class="font-bold text-sm">晶鑽儲值</span>
+    <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+            <button type="button" id="pay_crystal_cash" class="paymethod-btn active-cash" onclick="setPayMethod('crystal','cash')">現金</button>
+            <button type="button" id="pay_crystal_mycard" class="paymethod-btn" onclick="setPayMethod('crystal','mycard')">點數</button>
+        </div>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+    </div>
+</div>
                             <div id="cat-crystal" class="category-content"><div id="act-crystal-list" class="space-y-2 py-2"></div></div>
 
                             <div class="category-header" data-target="cat-assoc">
-                                <span class="font-bold text-sm">協會禮包</span>
-                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
-                            </div>
+    <span class="font-bold text-sm">協會禮包</span>
+    <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+            <button type="button" id="pay_assoc_cash" class="paymethod-btn active-cash" onclick="setPayMethod('assoc','cash')">現金</button>
+            <button type="button" id="pay_assoc_mycard" class="paymethod-btn" onclick="setPayMethod('assoc','mycard')">點數</button>
+        </div>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+    </div>
+</div>
                             <div id="cat-assoc" class="category-content">
                                 <div class="bg-[#2c2e3a] p-5 rounded-2xl space-y-6 border border-white/5 my-2">
                                     <div class="space-y-4">
@@ -373,12 +439,19 @@
                             </div>
 
                             <div class="category-header" data-target="cat-other">
-                                <span class="font-bold text-sm">其他課金</span>
-                                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
-                            </div>
+    <span class="font-bold text-sm">其他課金</span>
+    <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+            <button type="button" id="pay_other_cash" class="paymethod-btn active-cash" onclick="setPayMethod('other','cash')">現金</button>
+            <button type="button" id="pay_other_mycard" class="paymethod-btn" onclick="setPayMethod('other','mycard')">點數</button>
+        </div>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+    </div>
+</div>
                             <div id="cat-other" class="category-content">
-                                <div class="bg-[#2c2e3a] p-5 rounded-2xl space-y-4 border border-white/5 my-2">
-                                    <div><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">金額 (NT$)</label><input type="number" id="otherPkgPrice" placeholder="輸入金額" class="text-sm rounded-xl w-full"></div>
+                                <div class="bg-[#2c2e3a] p-5 rounded-2xl border border-white/5 my-2">
+                                    <div id="other-cash-field"><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">金額 (NT$)</label><input type="number" id="otherPkgPrice" placeholder="輸入金額" class="text-sm rounded-xl w-full"></div>
+<div id="other-mycard-field" style="display:none"><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">點數</label><input type="number" id="otherPkgPriceMycard" placeholder="輸入點數" class="text-sm rounded-xl w-full"></div>
                                 </div>
                             </div>
                         </div>
@@ -394,16 +467,20 @@
                         <select id="activityFilter" class="w-full text-sm"></select>
                     </div>
                     
-                    <div id="monthActivitySummary" class="hidden mb-6 p-4 bg-white/5 rounded-2xl border border-white/5 grid grid-cols-2 gap-4">
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-dim uppercase tracking-wider font-bold mb-1">當月耗鑽總計</span>
-                            <span id="monthSumDiamonds" class="text-lg font-bold text-blue-400">0</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-dim uppercase tracking-wider font-bold mb-1">當月開銷總計</span>
-                            <span id="monthSumCost" class="text-lg font-bold text-yellow-400">NT$ 0</span>
-                        </div>
-                    </div>
+                    <div id="monthActivitySummary" class="hidden mb-6 p-4 bg-white/5 rounded-2xl border border-white/5 grid grid-cols-3 gap-4">
+    <div class="flex flex-col">
+        <span class="text-[10px] text-dim uppercase tracking-wider font-bold mb-1">當月耗鑽總計</span>
+        <span id="monthSumDiamonds" class="text-lg font-bold text-blue-400">0</span>
+    </div>
+    <div class="flex flex-col">
+        <span class="text-[10px] text-dim uppercase tracking-wider font-bold mb-1">當月開銷總計</span>
+        <span id="monthSumCost" class="text-lg font-bold text-yellow-400">NT$ 0</span>
+    </div>
+    <div class="flex flex-col">
+        <span class="text-[10px] text-dim uppercase tracking-wider font-bold mb-1">當月耗點總計</span>
+        <span id="monthSumMycard" class="text-lg font-bold text-violet-400">0 點</span>
+    </div>
+</div>
 
                     <div id="activityList" class="space-y-4"></div>
                     
@@ -428,13 +505,22 @@
                         <h3 class="text-sm font-bold mb-4 flex items-center gap-2 text-[#fcc21b]"><i data-lucide="credit-card" class="w-4 h-4"></i> 月卡/週卡/每日</h3>
                         <div class="space-y-3 mb-8">
                             <div class="flex items-center justify-between p-4 bg-[#252833] rounded-2xl border border-white/5">
-                                <div class="flex flex-col"><span class="text-sm font-bold">月卡(鎏金卡)</span><span class="text-[10px] text-[#9ba1ad]">NT$ 150</span></div>
-                                <div class="flex items-center gap-4">
-                                    <button class="counter-btn" onclick="adjustQty('qty_monthly', -1)">-</button>
-                                    <span id="qty_monthly" class="w-4 text-center text-sm font-bold">0</span>
-                                    <button class="counter-btn" onclick="adjustQty('qty_monthly', 1)">+</button>
-                                </div>
-                            </div>
+    <div class="flex flex-col">
+        <span class="text-sm font-bold">月卡(鎏金卡)</span>
+        <span class="text-[10px] text-[#9ba1ad]">NT$ 150</span>
+    </div>
+    <div class="flex flex-col items-end gap-2">
+        <div class="flex items-center gap-2">
+            <button type="button" id="pay_monthly_cash" class="paymethod-btn active-cash" onclick="setPayMethod('monthly','cash')">現金</button>
+            <button type="button" id="pay_monthly_mycard" class="paymethod-btn" onclick="setPayMethod('monthly','mycard')">點數</button>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="counter-btn" onclick="adjustQty('qty_monthly', -1)">-</button>
+            <span id="qty_monthly" class="w-4 text-center text-sm font-bold">0</span>
+            <button class="counter-btn" onclick="adjustQty('qty_monthly', 1)">+</button>
+        </div>
+    </div>
+</div>
                             <div id="check_weekly" class="check-item flex items-center justify-between p-4">
                                 <div class="flex flex-col"><span class="text-sm font-bold">週卡(特權)</span><span class="text-[10px] text-[#9ba1ad]">NT$ 220</span></div>
                                 <div class="opacity-0"><i data-lucide="circle-check"></i></div>
@@ -451,15 +537,27 @@
 
                         <h3 class="text-sm font-bold mb-4 flex items-center gap-2 text-purple-400"><i data-lucide="scroll" class="w-4 h-4"></i> 密約</h3>
                         <div class="space-y-3 mb-8">
-                            <div id="check_promise_special" class="check-item flex items-center justify-between p-4">
-                                <div class="flex flex-col"><span class="text-sm font-bold">特別密約</span><span class="text-[10px] text-[#9ba1ad]">NT$ 320</span></div>
-                                <div class="opacity-0"><i data-lucide="circle-check"></i></div>
-                            </div>
+                           <div id="check_promise_special" class="check-item flex items-center justify-between p-4">
+    <div class="flex flex-col"><span class="text-sm font-bold">特別密約</span><span class="text-[10px] text-[#9ba1ad]">NT$ 320</span></div>
+    <div class="flex flex-col items-end gap-2">
+        <div class="flex items-center gap-2">
+            <button type="button" id="pay_promise_special_cash" class="paymethod-btn active-cash" onclick="event.stopPropagation();setPayMethod('promise_special','cash')">現金</button>
+            <button type="button" id="pay_promise_special_mycard" class="paymethod-btn" onclick="event.stopPropagation();setPayMethod('promise_special','mycard')">點數</button>
+        </div>
+        <div class="check-icon opacity-0"><i data-lucide="circle-check" class="w-5 h-5 text-indigo-400"></i></div>
+    </div>
+</div>
                             <div id="check_promise_upgrade" class="check-item flex items-center justify-between p-4">
-                                <div class="flex flex-col"><span class="text-sm font-bold">升級版特別密約</span><span class="text-[10px] text-[#9ba1ad]">NT$ 490</span></div>
-                                <div class="opacity-0"><i data-lucide="circle-check"></i></div>
-                            </div>
-                        </div>
+    <div class="flex flex-col"><span class="text-sm font-bold">升級版特別密約</span><span class="text-[10px] text-[#9ba1ad]">NT$ 490</span></div>
+    <div class="flex flex-col items-end gap-2">
+        <div class="flex items-center gap-2">
+            <button type="button" id="pay_promise_upgrade_cash" class="paymethod-btn active-cash" onclick="event.stopPropagation();setPayMethod('promise_upgrade','cash')">現金</button>
+            <button type="button" id="pay_promise_upgrade_mycard" class="paymethod-btn" onclick="event.stopPropagation();setPayMethod('promise_upgrade','mycard')">點數</button>
+        </div>
+        <div id="check_icon_promise_upgrade" class="check-icon opacity-0 mt-1"><i data-lucide="circle-check" class="w-5 h-5 text-indigo-400"></i></div>
+    </div>
+</div>
+</div>
 
                         <div class="category-header" data-target="cat-gen-crystal">
                             <span class="font-bold text-sm text-[#5e5ce6]">晶鑽儲值</span>
@@ -497,13 +595,34 @@
                     <h3 class="text-lg font-bold flex items-center gap-3"><i data-lucide="pie-chart" class="w-5 h-5 text-amber-400"></i>破洞分析</h3>
                     <select id="analysisFilter" class="w-full text-sm"></select>
                 </div>
-                <div id="analysisContent" class="space-y-6">
+                <div id="analysisContent" class="space-y-6 max-w-2xl mx-auto">
                     <div class="text-center py-20 text-dim text-sm italic">請選擇月份以查看全量數據分析...</div>
                 </div>
             </div>
         </div>
     </div>
-<div id="editModal">
+<div id="actEditMenu" 
+    style="display:none; position:fixed; z-index:50; top:50%; left:50%; transform:translate(-50%,-50%)"
+    class="bg-[#2c2e3a] border border-white/10 rounded-2xl p-2 shadow-xl">
+</div>
+<div id="patchNoteModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; display:none; align-items:center; justify-content:center;">
+    <div class="glass-card p-8 w-full max-w-md shadow-2xl" style="max-height:90vh; overflow-y:auto;">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold flex items-center gap-2">
+                <i data-lucide="megaphone" class="w-5 h-5 text-indigo-400"></i> 更新公告
+            </h3>
+            <span id="patchVersion" class="text-xs bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full font-bold"></span>
+        </div>
+        <div class="text-xs text-[#9ba1ad] mb-4" id="patchDate"></div>
+        <ul class="space-y-2 mb-6" id="patchContent"></ul>
+        <div id="patchPreview" style="display:none" class="bg-white/5 rounded-2xl p-4 mb-6 border border-white/5">
+            <span class="text-xs text-[#9ba1ad] font-bold block mb-1">下次更新預告</span>
+            <span id="patchPreviewText" class="text-sm text-white"></span>
+        </div>
+        <button onclick="closePatchNote()" class="w-full py-3 bg-indigo-500 rounded-xl font-bold text-white">我知道了</button>
+    </div>
+</div>
+    <div id="editModal">
     <div class="glass-card p-8 w-full max-w-md shadow-2xl" style="max-height:90vh; overflow-y:auto;">
         <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
             <i data-lucide="pencil"></i> 編輯紀錄
@@ -540,6 +659,40 @@
             PROFILE: 'ds_tracker_profile'
         };
 
+        const PATCH_NOTE = {
+    version: 'v1.1.0',
+    date: '2026-03-21',
+    content: [
+        '✨ 新增點數支付選項',
+        '✨ 編輯視窗有資料的項目顯示綠點',
+        '✨ 新增不同卡池選項',
+        '🔧 修正部分禮包金額錯誤',
+        '🔧 修正同一天不同活動編輯時互相影響',
+        '🔧 編輯視窗卡池類型自動還原',
+        '🔧 登錄後選單自動合起',
+    ],
+    preview: null  // 有預告時填字串，沒有填 null
+};
+function checkPatchNote() {
+    const seen = localStorage.getItem('ds_seen_version');
+    if (seen === PATCH_NOTE.version) return;
+    document.getElementById('patchVersion').innerText = PATCH_NOTE.version;
+    document.getElementById('patchDate').innerText = PATCH_NOTE.date;
+    document.getElementById('patchContent').innerHTML = PATCH_NOTE.content.map(c =>
+        `<li class="flex items-start gap-2 text-sm text-white"><span class="text-green-400 mt-0.5">✓</span>${c}</li>`
+    ).join('');
+    if (PATCH_NOTE.preview) {
+        document.getElementById('patchPreview').style.display = 'block';
+        document.getElementById('patchPreviewText').innerText = PATCH_NOTE.preview;
+    }
+    document.getElementById('patchNoteModal').style.display = 'flex';
+    lucide.createIcons();
+}
+
+function closePatchNote() {
+    localStorage.setItem('ds_seen_version', PATCH_NOTE.version);
+    document.getElementById('patchNoteModal').style.display = 'none';
+}
         let activities = [];
         let payments = [];
         let hunterName = "點擊輸入";
@@ -549,8 +702,15 @@
         const PAGE_SIZE = 10;
         let actCurrentPage = 1;
         let payCurrentPage = 1;
+        let newestActivityId = null;
 
         // 初始化資料載入
+        function updateActNameList() {
+    const datalist = document.getElementById('actNameList');
+    if (!datalist) return;
+    const names = [...new Set(activities.map(a => a.name))].slice(0, 8);
+    datalist.innerHTML = names.map(n => `<option value="${n}">`).join('');
+}
         function initialFetchLocal() {
             try {
                 const storedActs = localStorage.getItem(STORAGE_KEYS.ACTIVITIES);
@@ -568,6 +728,7 @@
                 isDataLoaded = true;
                 updateFilters();
                 renderUI();
+                updateActNameList();
                 hideLoading();
             } catch (e) {
                 console.error("Local data load error", e);
@@ -689,8 +850,14 @@
         }
 
         // 常量定義與初始化 (完全保留原邏輯)
-        const PKG_LIMITED = [{id:'lim1',label:'禮包一',price:15,max:5},{id:'lim2',label:'禮包二',price:30,max:5},{id:'lim3',label:'禮包三',price:150,max:5},{id:'lim4',label:'禮包四',price:320,max:5},{id:'lim5',label:'禮包五',price:390,max:3},{id:'lim6',label:'禮包六',price:820,max:10},{id:'lim7',label:'禮包七',price:1690,max:1}];
-        const PKG_REVIVAL = [{id:'rev1',label:'禮包一',price:30,max:1},{id:'rev2',label:'禮包二',price:150,max:1},{id:'rev3',label:'禮包三',price:290,max:1},{id:'rev4',label:'禮包四',price:590,max:5},{id:'rev5',label:'禮包五',price:820,max:10}];
+        const PKG_POOLS = {
+    limited_single_day:   [{id:'lim1',label:'禮包一',price:15,max:5},{id:'lim2',label:'禮包二',price:30,max:5},{id:'lim3',label:'禮包三',price:150,max:5},{id:'lim4',label:'禮包四',price:320,max:5},{id:'lim5',label:'禮包五',price:390,max:3},{id:'lim6',label:'禮包六',price:820,max:10},{id:'lim7',label:'禮包七',price:1690,max:1}],
+    limited_single_month: [{id:'lim1',label:'禮包一',price:15,max:3},{id:'lim2',label:'禮包二',price:30,max:3},{id:'lim3',label:'禮包三',price:150,max:3},{id:'lim4',label:'禮包四',price:290,max:2},{id:'lim5',label:'禮包五',price:390,max:2},{id:'lim6',label:'禮包六',price:820,max:10}],
+    limited_multi:        [{id:'lim1',label:'禮包一',price:15,max:5},{id:'lim2',label:'禮包二',price:30,max:3},{id:'lim3',label:'禮包三',price:150,max:5},{id:'lim4',label:'禮包四',price:320,max:5},{id:'lim5',label:'禮包五',price:390,max:5},{id:'lim6',label:'禮包六',price:590,max:3},{id:'lim7',label:'禮包七',price:820,max:10},{id:'lim8',label:'禮包八',price:1690,max:1}],
+    revival_single_day:   [{id:'rev1',label:'禮包一',price:30,max:1},{id:'rev2',label:'禮包二',price:150,max:3},{id:'rev3',label:'禮包三',price:320,max:5},{id:'rev4',label:'禮包四',price:390,max:3},{id:'rev5',label:'禮包五',price:820,max:10}],
+    revival_single_month: [{id:'rev1',label:'禮包一',price:30,max:1},{id:'rev2',label:'禮包二',price:150,max:1},{id:'rev3',label:'禮包三',price:290,max:1},{id:'rev4',label:'禮包四',price:390,max:3},{id:'rev5',label:'禮包五',price:820,max:10}],
+    revival_multi:        [{id:'rev1',label:'禮包一',price:30,max:1},{id:'rev2',label:'禮包二',price:150,max:1},{id:'rev3',label:'禮包三',price:320,max:1},{id:'rev4',label:'禮包四',price:390,max:3},{id:'rev5',label:'禮包五',price:820,max:10}]
+    };    
         const CRYSTAL_SPEC = [{cry:60,p:30},{cry:300,p:150},{cry:450,p:220},{cry:980,p:490},{cry:1980,p:890},{cry:3280,p:1490},{cry:6480,p:2990}];
         const ASSOC_SPEC = [{lv:10,p:30},{lv:15,p:150},{lv:20,p:220},{lv:25,p:320},{lv:30,p:490},{lv:35,p:590},{lv:40,p:890},{lv:50,p:1490},{lv:60,p:1790},{lv:65,p:2990}];
 
@@ -718,8 +885,8 @@
                         </div>`;
                 });
             };
-            renderPkgs(PKG_LIMITED, 'list-limited', 'val_');
-            renderPkgs(PKG_REVIVAL, 'list-revival', 'val_');
+            renderPkgs(PKG_POOLS['limited_single_day'], 'list-limited', 'val_');
+renderPkgs(PKG_POOLS['revival_single_day'], 'list-revival', 'val_');
 
             const renderCrystalList = (containerId, prefix) => {
                 const box = document.getElementById(containerId);
@@ -755,7 +922,7 @@
                 item.onclick = () => {
                     checkedStates[item.id] = !checkedStates[item.id];
                     item.classList.toggle('active', checkedStates[item.id]);
-                    const iconWrapper = item.querySelector('div:last-child');
+                    const iconWrapper = item.querySelector('.check-icon') || item.querySelector('div:last-child');
                     if (iconWrapper) iconWrapper.classList.toggle('opacity-0', !checkedStates[item.id]);
                 };
             });
@@ -783,6 +950,9 @@
 
             initialFetchLocal();
             lucide.createIcons();
+            setPoolType('limited', 'limited_single_day');
+            setPoolType('revival', 'revival_single_day');
+            checkPatchNote();
         }
 
         function addActivity() {
@@ -794,52 +964,62 @@
             if (!name || !date) return;
             
             activities.push({ id: 'act_' + timestamp, name, spent: Math.max(0, before - after), date, timestamp });
-            
-            PKG_LIMITED.forEach(pkg => {
-                const el = document.getElementById('val_' + pkg.id);
-                if (el) {
-                    const q = parseInt(el.textContent || el.innerText) || 0;
-                    if (q > 0) { 
-                        payments.push({ id: 'p_'+Math.random(), date, type: pkg.label, amount: pkg.price*q, qty: q, ref: name, pkgType: 'limited', timestamp }); 
-                        el.innerText = '0'; 
-                    }
-                }
-            });
-            PKG_REVIVAL.forEach(pkg => {
-                const el = document.getElementById('val_' + pkg.id);
-                if (el) {
-                    const q = parseInt(el.textContent || el.innerText) || 0;
-                    if (q > 0) { 
-                        payments.push({ id: 'p_'+Math.random(), date, type: pkg.label, amount: pkg.price*q, qty: q, ref: name, pkgType: 'revival', timestamp }); 
-                        el.innerText = '0'; 
-                    }
-                }
-            });
-            CRYSTAL_SPEC.forEach(spec => {
-                const qy = document.getElementById(`act_cry_qty_${spec.cry}`);
-                if (qy) {
-                    const q = parseInt(qy.value) || 0;
-                    if (q > 0) { 
-                        payments.push({ id: 'p_'+Math.random(), date, type: '晶鑽儲值', amount: spec.p * q, qty: q, crystalVal: spec.cry, ref: name, timestamp }); 
-                        qy.value = '0'; 
-                    }
-                }
-            });
-            const oP = parseFloat(document.getElementById('otherPkgPrice').value) || 0;
-            if (oP > 0) {
-                payments.push({ id: 'p_'+Date.now(), date, type: '其他課金', amount: oP, qty: 1, ref: name, timestamp });
-                document.getElementById('otherPkgPrice').value = '';
-            }
-            const assocSumStr = document.getElementById('assocPreview').innerText.replace(/,/g, '').match(/\d+/);
-            const assocSum = assocSumStr ? parseInt(assocSumStr[0].replace(/,/g, '')) : 0;
-            if (assocSum > 0) {
-                payments.push({ id: 'p_'+Date.now(), date, type: '協會等級禮包', amount: assocSum, qty: 1, ref: name, timestamp });
-                document.getElementById('assocStart').value = 0; document.getElementById('assocEnd').value = 0;
-                document.getElementById('assocPreview').innerText = `預計金額：NT$ 0`;
-            }
+            newestActivityId = 'act_' + timestamp;
+
+            PKG_POOLS[poolTypes.limited].forEach(pkg => {
+    const el = document.getElementById('val_' + pkg.id);
+    if (el) {
+        const q = parseInt(el.textContent || el.innerText) || 0;
+        if (q > 0) { 
+            payments.push({ id: 'p_'+Math.random(), date, type: pkg.label, amount: pkg.price*q, qty: q, ref: name, pkgType: 'limited', poolType: poolTypes.limited, payMethod: payMethods.limited, timestamp }); 
+            el.innerText = '0'; 
+        }
+    }
+});
+PKG_POOLS[poolTypes.revival].forEach(pkg => {
+    const el = document.getElementById('val_' + pkg.id);
+    if (el) {
+        const q = parseInt(el.textContent || el.innerText) || 0;
+        if (q > 0) { 
+            payments.push({ id: 'p_'+Math.random(), date, type: pkg.label, amount: pkg.price*q, qty: q, ref: name, pkgType: 'revival', poolType: poolTypes.revival, payMethod: payMethods.revival, timestamp }); 
+            el.innerText = '0'; 
+        }
+    }
+});
+CRYSTAL_SPEC.forEach(spec => {
+    const qy = document.getElementById(`act_cry_qty_${spec.cry}`);
+    if (qy) {
+        const q = parseInt(qy.value) || 0;
+        if (q > 0) { 
+            payments.push({ id: 'p_'+Math.random(), date, type: '晶鑽儲值', amount: spec.p * q, qty: q, crystalVal: spec.cry, ref: name, payMethod: payMethods.crystal, timestamp }); 
+            qy.value = '0'; 
+        }
+    }
+});
+const otherMethod = payMethods.other || 'cash';
+const oPCash = parseFloat(document.getElementById('otherPkgPrice').value) || 0;
+const oPMycard = parseFloat(document.getElementById('otherPkgPriceMycard').value) || 0;
+const oP = otherMethod === 'mycard' ? oPMycard : oPCash;
+if (oP > 0) {
+    payments.push({ id: 'p_'+Date.now(), date, type: '其他課金', amount: oP, qty: 1, ref: name, payMethod: otherMethod, timestamp });
+    document.getElementById('otherPkgPrice').value = '';
+    document.getElementById('otherPkgPriceMycard').value = '';
+}
+const assocSumStr = document.getElementById('assocPreview').innerText.replace(/,/g, '').match(/\d+/);
+const assocSum = assocSumStr ? parseInt(assocSumStr[0].replace(/,/g, '')) : 0;
+if (assocSum > 0) {
+    payments.push({ id: 'p_'+Date.now(), date, type: '協會等級禮包', amount: assocSum, qty: 1, ref: name, payMethod: payMethods.assoc, timestamp });
+    document.getElementById('assocStart').value = 0; document.getElementById('assocEnd').value = 0;
+    document.getElementById('assocPreview').innerText = `預計金額：NT$ 0`;
+}
             
             localSave();
+            PKG_POOLS[poolTypes.limited].forEach(pkg => { const el = document.getElementById('val_' + pkg.id); if (el) el.innerText = '0'; });
+PKG_POOLS[poolTypes.revival].forEach(pkg => { const el = document.getElementById('val_' + pkg.id); if (el) el.innerText = '0'; });
+CRYSTAL_SPEC.forEach(spec => { const el = document.getElementById('act_cry_qty_' + spec.cry); if (el) el.value = '0'; });
             nameEl.value = ''; beforeEl.value = ''; afterEl.value = '';
+            resetPayMethods();
+document.querySelectorAll('.category-content.open').forEach(el => el.classList.remove('open'));
             actCurrentPage = 1; updateFilters(); renderUI();
         }
 
@@ -849,11 +1029,11 @@
             if (!date) return;
             let changed = false;
             const mQtyEl = document.getElementById('qty_monthly'); const mQty = parseInt(mQtyEl.innerText);
-            if (mQty > 0) { payments.push({ id: 'p_'+Math.random(), date, type: '月卡', amount: 150*mQty, qty: mQty, ref: '一般儲值', timestamp }); mQtyEl.innerText = '0'; changed = true; }
-            const basicChecks = [{id: 'check_weekly', label: '週卡', price: 220}, {id: 'check_daily_rare', label: '每日限購(珍貴)', price: 15}, {id: 'check_daily_bright', label: '每日限購(璀璨)', price: 30}, {id: 'check_promise_special', label: '特別密約', price: 320}, {id: 'check_promise_upgrade', label: '升級版特別密約', price: 490}];
+            if (mQty > 0) { payments.push({ id: 'p_'+Math.random(), date, type: '月卡', amount: 150*mQty, qty: mQty, ref: '一般儲值', payMethod: payMethods.monthly, timestamp }); mQtyEl.innerText = '0'; changed = true; }
+            const basicChecks = [{id: 'check_weekly', label: '週卡', price: 220, payKey: null}, {id: 'check_daily_rare', label: '每日限購(珍貴)', price: 15, payKey: null}, {id: 'check_daily_bright', label: '每日限購(璀璨)', price: 30, payKey: null}, {id: 'check_promise_special', label: '特別密約', price: 320, payKey: 'promise_special'}, {id: 'check_promise_upgrade', label: '升級版特別密約', price: 490, payKey: 'promise_upgrade'}];
             basicChecks.forEach(c => {
                 if (checkedStates[c.id]) {
-                    payments.push({ id: 'p_'+Math.random(), date, type: c.label, amount: c.price, qty: 1, ref: '一般儲值', timestamp });
+                    payments.push({ id: 'p_'+Math.random(), date, type: c.label, amount: c.price, qty: 1, ref: '一般儲值', payMethod: payMethods[c.payKey] || 'cash', timestamp });
                     const el = document.getElementById(c.id); checkedStates[c.id] = false;
                     if (el) { el.classList.remove('active'); const icon = el.querySelector('div:last-child'); if(icon) icon.classList.add('opacity-0'); }
                     changed = true;
@@ -866,7 +1046,7 @@
                     if (q > 0) { payments.push({ id: 'p_'+Math.random(), date, type: '晶鑽儲值', amount: spec.p * q, qty: q, crystalVal: spec.cry, ref: '一般儲值', timestamp }); qy.value = '0'; changed = true; }
                 }
             });
-            if (changed) { payCurrentPage = 1; localSave(); updateFilters(); renderUI(); }
+            if (changed) { resetPayMethods(); payCurrentPage = 1; localSave(); updateFilters(); renderUI(); }
         }
 
         function switchTab(t) {
@@ -934,13 +1114,16 @@
             if (selA && !selA.startsWith('year_')) {
                 summaryBox.classList.remove('hidden');
                 document.getElementById('monthSumDiamonds').innerText = filteredActs.reduce((s, a) => s + (a.spent || 0), 0).toLocaleString();
-                document.getElementById('monthSumCost').innerText = `NT$ ${payments.filter(p => p.date.startsWith(selA) && p.ref !== '一般儲值').reduce((s, p) => s + (p.amount || 0), 0).toLocaleString()}`;
+const monthActPayments = payments.filter(p => p.date.startsWith(selA) && p.ref !== '一般儲值');
+document.getElementById('monthSumCost').innerText = `NT$ ${monthActPayments.filter(p => (p.payMethod || 'cash') === 'cash').reduce((s, p) => s + (p.amount || 0), 0).toLocaleString()}`;
+document.getElementById('monthSumMycard').innerText = `${monthActPayments.filter(p => p.payMethod === 'mycard').reduce((s, p) => s + (p.amount || 0), 0).toLocaleString()} 點`;
             } else summaryBox.classList.add('hidden');
 
-            const actDateGroups = filteredActs.reduce((acc, a) => {
-                if (!acc[a.date]) acc[a.date] = { date: a.date, totalSpent: 0, names: [] };
+           const actDateGroups = filteredActs.reduce((acc, a) => {
+                if (!acc[a.date]) acc[a.date] = { date: a.date, totalSpent: 0, names: [], ids: [] };
                 acc[a.date].totalSpent += (a.spent || 0); 
                 if(!acc[a.date].names.includes(a.name)) acc[a.date].names.push(a.name);
+                acc[a.date].ids.push(a.id);
                 return acc;
             }, {});
 
@@ -950,10 +1133,14 @@
 
             actPagedDates.forEach(date => {
                 const group = actDateGroups[date];
-                const dayCosts = payments.filter(p => p.date === date && group.names.includes(p.ref)).reduce((s, p) => s + p.amount, 0);
+                const dayPayments = payments.filter(p => p.date === date && group.names.includes(p.ref));
+const dayCosts = dayPayments.reduce((s, p) => s + p.amount, 0);
+const dayCash = dayPayments.filter(p => (p.payMethod || 'cash') === 'cash').reduce((s, p) => s + p.amount, 0);
+const dayMycard = dayPayments.filter(p => p.payMethod === 'mycard').reduce((s, p) => s + p.amount, 0);
                 const row = document.createElement('div');
                 row.className = 'glass-card p-6 border-l-4 border-indigo-500 flex flex-row items-center justify-between';
-                row.innerHTML = `<div class="flex flex-col gap-1 overflow-hidden flex-1"><span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 rounded-full font-bold w-fit">${date}</span><span class="text-sm font-bold truncate pr-2 text-white">${group.names.join('、')}</span><div class="flex flex-col gap-1 mt-1 text-[11px] text-[#9ba1ad]"><div>耗鑽：<span class="text-blue-400 font-bold">${group.totalSpent.toLocaleString()}</span></div><div>開銷：<span class="text-yellow-400 font-bold">NT$ ${dayCosts.toLocaleString()}</span></div></div></div><div class="flex gap-1 shrink-0 ml-4"><button class="p-1 text-indigo-400/50 hover:text-indigo-400" onclick="window.openEditActivity('${date}')"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button><button class="p-1 text-red-400/50 hover:text-red-400" onclick="window.deleteActivityByDate('${date}')"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>`;
+                const isNewest = newestActivityId && group.ids.includes(newestActivityId);
+                row.innerHTML = `<div class="flex flex-col gap-1 overflow-hidden flex-1"><div class="flex items-center gap-2"><span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 rounded-full font-bold w-fit">${date}</span>${isNewest ? '<span class="text-[10px] bg-yellow-500/20 text-yellow-400 px-2 rounded-full font-bold w-fit animate-pulse">NEW!</span>' : ''}</div><span class="text-sm font-bold truncate pr-2 text-white">${group.names.join('、')}</span><div class="flex flex-col gap-1 mt-1 text-[11px] text-[#9ba1ad]"><div>耗鑽：<span class="text-blue-400 font-bold">${group.totalSpent.toLocaleString()}</span></div><div>現金：<span class="text-yellow-400 font-bold">NT$ ${dayCash.toLocaleString()}</span>　點數：<span class="text-violet-400 font-bold">${dayMycard.toLocaleString()}</span></div></div></div><div class="flex gap-1 shrink-0 ml-4"><button class="p-1 text-indigo-400/50 hover:text-indigo-400" onclick="window.chooseActivityToEdit('${date}')"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button><button class="p-1 text-red-400/50 hover:text-red-400" onclick="window.deleteActivityByDate('${date}')"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>`;
                 actList.appendChild(row);
             });
             document.getElementById('actPageInfo').innerText = `第 ${actCurrentPage} / ${actTotalPages} 頁`;
@@ -969,9 +1156,11 @@
                 let monthPayments = generalPayments;
                 if (selPayM.startsWith('year_')) monthPayments = generalPayments.filter(p => p.date.startsWith(selPayM.split('_')[1]));
                 else monthPayments = generalPayments.filter(p => p.date.startsWith(selPayM));
-                
-                const aggregated = monthPayments.reduce((acc, p) => { if (!acc[p.type]) acc[p.type] = { type: p.type, totalAmount: 0, totalQty: 0 }; acc[p.type].totalAmount += p.amount; acc[p.type].totalQty += (p.qty || 1); return acc; }, {});
-                payList.innerHTML = `<div class="glass-card p-6 border-l-4 border-purple-500/50 flex flex-col gap-3"><div class="flex items-center justify-between border-b border-white/5 pb-2"><span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 rounded-full font-bold">匯整統計</span><span class="text-sm font-bold text-white">NT$ ${monthPayments.reduce((s,p)=>s+p.amount,0).toLocaleString()}</span></div><div class="space-y-4">${Object.values(aggregated).sort((a,b)=>b.totalAmount-a.totalAmount).map(item => `<div class="flex items-center justify-between"><span class="text-sm font-bold text-white">${item.type} * ${item.totalQty}</span><span class="text-xs text-dim">NT$ ${item.totalAmount.toLocaleString()}</span></div>`).join('')}</div></div>`;
+                const monthCash = monthPayments.filter(p=>(p.payMethod||'cash')==='cash').reduce((s,p)=>s+p.amount,0);
+const monthMycard = monthPayments.filter(p=>p.payMethod==='mycard').reduce((s,p)=>s+p.amount,0);
+               const aggregated = monthPayments.reduce((acc, p) => { if (!acc[p.type]) acc[p.type] = { type: p.type, totalAmount: 0, totalQty: 0, totalCash: 0, totalMycard: 0 }; acc[p.type].totalAmount += p.amount; acc[p.type].totalQty += (p.qty || 1); if ((p.payMethod||'cash')==='cash') acc[p.type].totalCash += p.amount; else acc[p.type].totalMycard += p.amount; return acc; }, {});
+
+                payList.innerHTML = `<div class="glass-card p-6 border-l-4 border-purple-500/50 flex flex-col gap-3"><div class="flex items-center justify-between border-b border-white/5 pb-2"><span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 rounded-full font-bold">匯整統計</span><span class="text-sm font-bold">${monthCash > 0 ? `<span class="text-yellow-400">NT$ ${monthCash.toLocaleString()}</span>` : ''}${monthCash > 0 && monthMycard > 0 ? ` <span class="text-white/30">/</span> ` : ''}${monthMycard > 0 ? `<span class="text-violet-400">${monthMycard.toLocaleString()} 點</span>` : ''}</span></div><div class="space-y-4">${Object.values(aggregated).sort((a,b)=>b.totalAmount-a.totalAmount).map(item => `<div class="flex items-center justify-between"><span class="text-sm font-bold text-white">${item.type} * ${item.totalQty}</span><span class="text-xs">${item.totalCash > 0 ? `<span class="text-yellow-400">NT$ ${item.totalCash.toLocaleString()}</span>` : ''}${item.totalCash > 0 && item.totalMycard > 0 ? ` <span class="text-white/30">/</span> ` : ''}${item.totalMycard > 0 ? `<span class="text-violet-400">${item.totalMycard.toLocaleString()} 點</span>` : ''}</span></div>`).join('')}</div></div>`;
                 document.getElementById('payPagination').style.display = 'none';
             } else {
                 const payGrouped = generalPayments.reduce((groups, p) => { if (!groups[p.date]) groups[p.date] = []; groups[p.date].push(p); return groups; }, {});
@@ -982,7 +1171,7 @@
                     const dayTotal = payGrouped[date].reduce((sum, p) => sum + p.amount, 0);
                     const row = document.createElement('div');
                     row.className = 'glass-card p-6 border-l-4 border-purple-500/50 flex flex-col gap-3';
-                    row.innerHTML = `<div class="flex items-center justify-between border-b border-white/5 pb-2"><span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 rounded-full font-bold">${date}</span><span class="text-sm font-bold text-white">NT$ ${dayTotal.toLocaleString()}</span></div><div class="space-y-3">${payGrouped[date].map(p => `<div class="flex items-center justify-between"><span class="text-sm font-bold text-white">${p.type}${p.qty > 1 ? ' * '+p.qty : ''}</span><div class="flex items-center gap-3"><span class="text-xs text-dim">NT$ ${p.amount.toLocaleString()}</span>
+                    row.innerHTML = `<div class="flex items-center justify-between border-b border-white/5 pb-2"><span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 rounded-full font-bold">${date}</span><span class="text-sm font-bold text-yellow-400">NT$ ${dayTotal.toLocaleString()}</span></div><div class="space-y-3">${payGrouped[date].map(p => `<div class="flex items-center justify-between"><span class="text-sm font-bold text-white">${p.type}${p.qty > 1 ? ' * '+p.qty : ''}</span><div class="flex items-center gap-3">${(p.payMethod||'cash')==='mycard' ? `<span class="text-xs text-violet-400">${p.amount.toLocaleString()} 點</span>` : `<span class="text-xs text-yellow-400">NT$ ${p.amount.toLocaleString()}</span>`}
 <button class="p-1 text-indigo-400/30 hover:text-indigo-400" onclick="window.openEditPayment('${p.id}')"><i data-lucide="pencil" class="w-3 h-3"></i></button><button class="p-1 text-red-400/30 hover:text-red-400" onclick="window.deletePayment('${p.id}')"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div></div>`).join('')}</div>`;
                     payList.appendChild(row);
                 });
@@ -997,13 +1186,16 @@
             if (selAnM) {
                 const mP = payments.filter(p => p.date.startsWith(selAnM));
                 const mA = activities.filter(a => a.date.startsWith(selAnM));
-                const catSum = mP.reduce((acc, p) => { if (!acc[p.type]) acc[p.type] = { type: p.type, amount: 0, qty: 0 }; acc[p.type].amount += p.amount; acc[p.type].qty += (p.qty || 1); return acc; }, {});
+                const catSum = mP.reduce((acc, p) => { if (!acc[p.type]) acc[p.type] = { type: p.type, amount: 0, qty: 0, cash: 0, mycard: 0 }; acc[p.type].amount += p.amount; acc[p.type].qty += (p.qty || 1); if ((p.payMethod||'cash')==='cash') acc[p.type].cash += p.amount; else acc[p.type].mycard += p.amount; return acc; }, {});
                 const actSum = {};
-                mA.forEach(a => { if (!actSum[a.name]) actSum[a.name] = { name: a.name, diamonds: 0, cost: 0 }; actSum[a.name].diamonds += (a.spent || 0); });
-                mP.forEach(p => { if (p.ref !== '一般儲值') { if (!actSum[p.ref]) actSum[p.ref] = { name: p.ref, diamonds: 0, cost: 0 }; actSum[p.ref].cost += p.amount; } });
-                analysisContent.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="p-6 bg-white/5 rounded-3xl border border-white/5"><span class="text-[10px] text-dim uppercase tracking-widest font-bold block mb-1">分析區間支出</span><span class="text-2xl font-bold text-white">NT$ ${mP.reduce((s,p)=>s+p.amount, 0).toLocaleString()}</span></div><div class="p-6 bg-white/5 rounded-3xl border border-white/5"><span class="text-[10px] text-dim uppercase tracking-widest font-bold block mb-1">分析區間耗鑽</span><span class="text-2xl font-bold text-blue-400">${mA.reduce((s,a)=>s+a.spent, 0).toLocaleString()} <span class="text-xs">鑽</span></span></div></div><div class="glass-card p-6"><h4 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i> 項目類別統計</h4><div class="space-y-4">${Object.values(catSum).sort((a,b)=>b.amount-a.amount).map(item => `<div class="flex items-center justify-between"><div class="flex flex-col"><span class="text-sm font-bold text-white">${item.type}</span><span class="text-[10px] text-dim">數量: ${item.qty}</span></div><span class="text-sm text-dim">NT$ ${item.amount.toLocaleString()}</span></div>`).join('')}</div></div><div class="glass-card p-6"><h4 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> 活動細節分析</h4><div class="space-y-3">${Object.values(actSum).length > 0 ? Object.values(actSum).map(act => `<div class="p-4 bg-white/5 rounded-2xl border border-white/5"><div class="font-bold text-sm mb-2 text-white">${act.name}</div><div class="flex justify-between text-xs"><span class="text-blue-400">耗鑽: ${act.diamonds.toLocaleString()}</span><span class="text-yellow-400 font-bold">開銷: NT$ ${act.cost.toLocaleString()}</span></div></div>`).join('') : '<div class="text-center py-4 text-xs text-dim">此區間無活動紀錄</div>'}</div></div>`;
+                mA.forEach(a => { if (!actSum[a.name]) actSum[a.name] = { name: a.name, diamonds: 0, cash: 0, mycard: 0 }; actSum[a.name].diamonds += (a.spent || 0); });
+                mP.forEach(p => { if (p.ref !== '一般儲值') { if (!actSum[p.ref]) actSum[p.ref] = { name: p.ref, diamonds: 0, cash: 0, mycard: 0 }; if ((p.payMethod||'cash')==='cash') actSum[p.ref].cash += p.amount; else actSum[p.ref].mycard += p.amount; } });
+                const totalCash = mP.filter(p => (p.payMethod || 'cash') === 'cash').reduce((s,p)=>s+p.amount, 0);
+const totalMycard = mP.filter(p => p.payMethod === 'mycard').reduce((s,p)=>s+p.amount, 0);
+                analysisContent.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="p-6 bg-white/5 rounded-3xl border border-white/5"><span class="text-[10px] text-dim uppercase tracking-widest font-bold block mb-1">現金支出</span><span class="text-2xl font-bold text-yellow-400">NT$ ${totalCash.toLocaleString()}</span></div><div class="p-6 bg-white/5 rounded-3xl border border-white/5"><span class="text-[10px] text-dim uppercase tracking-widest font-bold block mb-1">點數支出</span><span class="text-2xl font-bold text-violet-400">${totalMycard.toLocaleString()} 點</span></div><div class="p-6 bg-white/5 rounded-3xl border border-white/5"><span class="text-[10px] text-dim uppercase tracking-widest font-bold block mb-1">分析區間耗鑽</span><span class="text-2xl font-bold text-blue-400">${mA.reduce((s,a)=>s+a.spent, 0).toLocaleString()} <span class="text-xs">鑽</span></span></div></div><div class="glass-card p-6"><h4 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i> 項目類別統計</h4><div class="space-y-4">${Object.values(catSum).sort((a,b)=>b.amount-a.amount).map(item => `<div class="flex items-center justify-between"><div class="flex flex-col"><span class="text-sm font-bold text-white">${item.type}</span><span class="text-[10px] text-dim">數量: ${item.qty}</span></div><span class="text-xs text-right">${item.cash > 0 ? `<span class="text-yellow-400">NT$ ${item.cash.toLocaleString()}</span>` : ''}${item.cash > 0 && item.mycard > 0 ? ' <span class="text-white/30">/</span> ' : ''}${item.mycard > 0 ? `<span class="text-violet-400">${item.mycard.toLocaleString()} 點</span>` : ''}</span></div>`).join('')}</div></div><div class="glass-card p-6"><h4 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-yellow-400"></i> 活動細節分析</h4><div class="space-y-3">${Object.values(actSum).length > 0 ? Object.values(actSum).map(act => `<div class="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between"><span class="font-bold text-sm text-white">${act.name}</span><div class="flex flex-col items-end gap-0.5 text-xs">${act.cash > 0 ? `<span class="text-yellow-400 font-bold">NT$ ${act.cash.toLocaleString()}</span>` : ''}${act.mycard > 0 ? `<span class="text-violet-400 font-bold">${act.mycard.toLocaleString()} 點</span>` : ''}<span class="text-blue-400">${act.diamonds.toLocaleString()} 鑽</span></div></div>`).join('') : '<div class="text-center py-4 text-xs text-dim">此區間無活動紀錄</div>'}</div></div>`;
             } else analysisContent.innerHTML = `<div class="text-center py-20 text-dim text-sm italic">請選擇月份以查看統計...</div>`;
             lucide.createIcons();
+        updateActNameList();
         }
 
 let editTarget = null;
@@ -1034,7 +1226,11 @@ function renderEditCrystalList(prefix, existingPayments) {
     return html;
 }
 
-function renderEditPkgList(list, existingPayments, pkgType) {
+function renderEditPkgList(existingPayments, pkgType) {
+const found = existingPayments.find(p => p.pkgType === pkgType);
+const poolType = (found ? found.poolType : null) ||
+        (pkgType === 'limited' ? 'limited_single_day' : 'revival_single_day');
+    const list = PKG_POOLS[poolType];
     let html = '';
     list.forEach(p => {
         const match = existingPayments.find(pay => pay.type === p.label && pay.pkgType === pkgType);
@@ -1059,20 +1255,38 @@ function renderEditPkgList(list, existingPayments, pkgType) {
     return html;
 }
 
-window.openEditActivity = (date) => {
+window.chooseActivityToEdit = (date) => {
     const acts = activities.filter(a => a.date === date);
     if (acts.length === 0) return;
-    const oldNames = acts.map(a => a.name);
-    const relatedPayments = payments.filter(p => p.date === date && oldNames.includes(p.ref));
+    if (acts.length === 1) {
+        window.openEditActivity(acts[0].id);
+        return;
+    }
+    // 多個活動：跳出選單
+    const menu = document.getElementById('actEditMenu');
+    menu.innerHTML = "<p class='text-xs text-white font-bold px-4 pt-2 pb-1'>選擇活動</p>" + acts.map(a =>
+        `<button class="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-xl"
+            onclick="document.getElementById('actEditMenu').style.display='none'; window.openEditActivity('${a.id}')"
+        >${a.name}</button>`
+    ).join('');
+    menu.style.display = 'block';
+};
+window.openEditActivity = (actId) => {
+    const act = activities.find(a => a.id === actId);
+    if (!act) return;
+    const date = act.date;
+    const acts = [act];
+    const oldNames = [act.name];
+    const relatedPayments = payments.filter(p => p.date === date && p.ref === act.name);
     const assocPkg = relatedPayments.find(p => p.type === '協會等級禮包');
     const otherPkg = relatedPayments.find(p => p.type === '其他課金');
 
-    editTarget = { type: 'activity', date };
+    editTarget = { type: 'activity', id: actId, date, name: act.name };
 
     document.getElementById('editModalFields').innerHTML = `
         <div>
             <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">活動名稱</label>
-            <input type="text" id="edit_actName" value="${acts.map(a => a.name).join('、')}" class="w-full">
+           <input type="text" id="edit_actName" value="${[...new Set(acts.map(a => a.name))].join('、')}" class="w-full">
         </div>
         <div>
             <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">活動日期</label>
@@ -1086,30 +1300,58 @@ window.openEditActivity = (date) => {
             </div>
         </div>
         <div>
-            <div class="category-header" onclick="document.getElementById('edit-cat-limited').classList.toggle('open')">
-                <span class="font-bold text-sm">限定禮包</span>
-                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+          <div class="category-header" onclick="document.getElementById('edit-cat-limited').classList.toggle('open')">
+    <span class="font-bold text-sm">限定禮包${relatedPayments.some(p => p.pkgType === 'limited') ? '<span class="w-2 h-2 rounded-full bg-green-400 inline-block ml-1 mb-0.5"></span>' : ''}</span>
+    <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+        <button type="button" id="edit_pool_limited_single_day" class="paymethod-btn" onclick="setEditPoolType('limited','limited_single_day')">單人日</button>
+        <button type="button" id="edit_pool_limited_single_month" class="paymethod-btn" onclick="setEditPoolType('limited','limited_single_month')">單人月</button>
+        <button type="button" id="edit_pool_limited_multi" class="paymethod-btn" onclick="setEditPoolType('limited','limited_multi')">混池</button>
+        <button type="but<span class="text-white/20 text-xs">|</span>
+        <button type="button" id="pay_edit_limited_cash" class="paymethod-btn" onclick="setPayMethod('edit_limited','cash')">💰</button>
+        <button type="button" id="pay_edit_limited_mycard" class="paymethod-btn" style="border-color:#fbbf24;color:#fbbf24;" onclick="setPayMethod('edit_limited','mycard')">🎫</button>
+    </div>
+    <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+</div>
             </div>
             <div id="edit-cat-limited" class="category-content">
-                <div class="grid grid-cols-1 gap-2 py-2">${renderEditPkgList(PKG_LIMITED, relatedPayments, 'limited')}</div>
+                <div class="grid grid-cols-1 gap-2 py-2">${renderEditPkgList(relatedPayments, 'limited')}</div>
             </div>
             <div class="category-header" onclick="document.getElementById('edit-cat-revival').classList.toggle('open')">
-                <span class="font-bold text-sm">復刻禮包</span>
-                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
-            </div>
+    <span class="font-bold text-sm">復刻禮包${relatedPayments.some(p => p.pkgType === 'revival') ? '<span class="w-2 h-2 rounded-full bg-green-400 inline-block ml-1 mb-0.5"></span>' : ''}</span>
+    <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+        <button type="button" id="edit_pool_revival_single_day" class="paymethod-btn" onclick="setEditPoolType('revival','revival_single_day')">單人日</button>
+        <button type="button" id="edit_pool_revival_single_month" class="paymethod-btn" onclick="setEditPoolType('revival','revival_single_month')">單人月</button>
+        <button type="button" id="edit_pool_revival_multi" class="paymethod-btn" onclick="setEditPoolType('revival','revival_multi')">混池</button>
+        <span class="text-white/20 text-xs">|</span>
+        <button type="button" id="pay_edit_revival_cash" class="paymethod-btn" onclick="setPayMethod('edit_revival','cash')">💰</button>
+        <button type="button" id="pay_edit_revival_mycard" class="paymethod-btn" style="border-color:#fbbf24;color:#fbbf24;" onclick="setPayMethod('edit_revival','mycard')">🎫</button></div>
+    <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+</div>
             <div id="edit-cat-revival" class="category-content">
-                <div class="grid grid-cols-1 gap-2 py-2">${renderEditPkgList(PKG_REVIVAL, relatedPayments, 'revival')}</div>
+                <div class="grid grid-cols-1 gap-2 py-2">${renderEditPkgList(relatedPayments, 'revival')}</div>
             </div>
             <div class="category-header" onclick="document.getElementById('edit-cat-crystal').classList.toggle('open')">
-                <span class="font-bold text-sm">晶鑽儲值</span>
-                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                <span class="font-bold text-sm">晶鑽儲值${relatedPayments.some(p => p.type === '晶鑽儲值') ? '<span class="w-2 h-2 rounded-full bg-green-400 inline-block ml-1 mb-0.5"></span>' : ''}</span>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                        <button type="button" id="pay_edit_crystal_cash" class="paymethod-btn" onclick="setPayMethod('edit_crystal','cash')">現金</button>
+                        <button type="button" id="pay_edit_crystal_mycard" class="paymethod-btn" onclick="setPayMethod('edit_crystal','mycard')">點數</button>
+                    </div>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                </div>
             </div>
             <div id="edit-cat-crystal" class="category-content">
                 <div class="space-y-2 py-2">${renderEditCrystalList('edit_act_cry', relatedPayments)}</div>
             </div>
             <div class="category-header" onclick="document.getElementById('edit-cat-assoc').classList.toggle('open')">
-                <span class="font-bold text-sm">協會禮包</span>
-                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                <span class="font-bold text-sm">協會禮包${relatedPayments.some(p => p.type === '協會等級禮包') ? '<span class="w-2 h-2 rounded-full bg-green-400 inline-block ml-1 mb-0.5"></span>' : ''}</span>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                        <button type="button" id="pay_edit_assoc_cash" class="paymethod-btn active-cash" onclick="setPayMethod('edit_assoc','cash')">現金</button>
+                        <button type="button" id="pay_edit_assoc_mycard" class="paymethod-btn" onclick="setPayMethod('edit_assoc','mycard')">點數</button>
+                    </div>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                </div>
             </div>
             <div id="edit-cat-assoc" class="category-content">
                 <div class="bg-[#2c2e3a] p-5 rounded-2xl space-y-6 border border-white/5 my-2">
@@ -1122,13 +1364,19 @@ window.openEditActivity = (date) => {
                 </div>
             </div>
             <div class="category-header" onclick="document.getElementById('edit-cat-other').classList.toggle('open')">
-                <span class="font-bold text-sm">其他課金</span>
-                <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                <span class="font-bold text-sm">其他課金${relatedPayments.some(p => p.type === '其他課金') ? '<span class="w-2 h-2 rounded-full bg-green-400 inline-block ml-1 mb-0.5"></span>' : ''}</span>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                        <button type="button" id="pay_edit_other_cash" class="paymethod-btn active-cash" onclick="setPayMethod('edit_other','cash')">現金</button>
+                        <button type="button" id="pay_edit_other_mycard" class="paymethod-btn" onclick="setPayMethod('edit_other','mycard')">點數</button>
+                    </div>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#9ba1ad]"></i>
+                </div>
             </div>
             <div id="edit-cat-other" class="category-content">
-                <div class="bg-[#2c2e3a] p-5 rounded-2xl space-y-4 border border-white/5 my-2">
-                    <label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">金額 (NT$)</label>
-                    <input type="number" id="edit_otherAmount" value="${otherPkg ? otherPkg.amount : 0}" class="w-full text-sm">
+                <div class="bg-[#2c2e3a] p-5 rounded-2xl border border-white/5 my-2">
+                    <div id="edit-other-cash-field"><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">金額 (NT$)</label><input type="number" id="edit_otherAmount" value="${otherPkg ? otherPkg.amount : 0}" class="w-full text-sm"></div>
+                    <div id="edit-other-mycard-field" style="display:none"><label class="text-[10px] text-[#9ba1ad] block mb-2 ml-1">點數</label><input type="number" id="edit_otherAmountMycard" value="0" class="w-full text-sm"></div>
                 </div>
             </div>
         </div>
@@ -1154,8 +1402,80 @@ if (es && ee) {
         es.value = 0; ee.value = ASSOC_SPEC.length - 1; calcAssoc();
     };
 }
+// 初始化編輯視窗的池子類型按鈕
+const foundLimited = relatedPayments.find(p => p.pkgType === 'limited');
+const editLimitedPool = (foundLimited ? foundLimited.poolType : null) || 'limited_single_day';
+const foundRevival = relatedPayments.find(p => p.pkgType === 'revival');
+const editRevivalPool = (foundRevival ? foundRevival.poolType : null) || 'revival_single_day';
+poolTypes.edit_limited = editLimitedPool;
+poolTypes.edit_revival = editRevivalPool;
+
+['limited_single_day', 'limited_single_month', 'limited_multi'].forEach(t => {
+    const btn = document.getElementById(`edit_pool_${t}`);
+    if (btn) {
+        btn.style.background = t === editLimitedPool ? 'var(--accent-purple)' : 'rgba(255,255,255,0.05)';
+        btn.style.color = t === editLimitedPool ? 'white' : '';
+        btn.style.borderColor = t === editLimitedPool ? 'var(--accent-purple)' : 'rgba(255,255,255,0.15)';
+    }
+});
+['revival_single_day', 'revival_single_month', 'revival_multi'].forEach(t => {
+    const btn = document.getElementById(`edit_pool_${t}`);
+    if (btn) {
+        btn.style.background = t === editRevivalPool ? 'var(--accent-purple)' : 'rgba(255,255,255,0.05)';
+        btn.style.color = t === editRevivalPool ? 'white' : '';
+        btn.style.borderColor = t === editRevivalPool ? 'var(--accent-purple)' : 'rgba(255,255,255,0.15)';
+    }
+});
     document.getElementById('editModal').style.display = 'flex';
+    document.getElementById('editModal').querySelector('.glass-card').scrollTop = 0;
     lucide.createIcons();
+    const crystalPkg = relatedPayments.find(p => p.type === '晶鑽儲值');
+    const crystalMethod = crystalPkg ? (crystalPkg.payMethod || 'cash') : 'cash';
+    payMethods.edit_crystal = crystalMethod;
+    const crystalCashBtn = document.getElementById('pay_edit_crystal_cash');
+    const crystalMycardBtn = document.getElementById('pay_edit_crystal_mycard');
+    if (crystalMethod === 'mycard') {
+        if (crystalCashBtn) { crystalCashBtn.style.background = ''; crystalCashBtn.style.borderColor = 'rgba(255,255,255,0.15)'; crystalCashBtn.style.color = ''; }
+        if (crystalMycardBtn) { crystalMycardBtn.style.background = 'rgba(251,191,36,0.3)'; crystalMycardBtn.style.borderColor = '#fbbf24'; crystalMycardBtn.style.color = '#fbbf24'; }
+    } else {
+        if (crystalCashBtn) { crystalCashBtn.style.background = 'rgba(251,191,36,0.3)'; crystalCashBtn.style.borderColor = '#fbbf24'; crystalCashBtn.style.color = '#fbbf24'; }
+        if (crystalMycardBtn) { crystalMycardBtn.style.background = ''; crystalMycardBtn.style.borderColor = 'rgba(255,255,255,0.15)'; crystalMycardBtn.style.color = ''; }
+    }
+    const assocPkgMethod = assocPkg ? (assocPkg.payMethod || 'cash') : 'cash';
+    payMethods.edit_assoc = assocPkgMethod;
+    const assocCashBtn = document.getElementById('pay_edit_assoc_cash');
+    const assocMycardBtn = document.getElementById('pay_edit_assoc_mycard');
+    if (assocPkgMethod === 'mycard') {
+        if (assocCashBtn) { assocCashBtn.classList.remove('active-cash'); assocCashBtn.style.background = ''; assocCashBtn.style.borderColor = 'rgba(255,255,255,0.15)'; assocCashBtn.style.color = ''; }
+        if (assocMycardBtn) { assocMycardBtn.classList.add('active-cash'); assocMycardBtn.style.background = 'rgba(251,191,36,0.3)'; assocMycardBtn.style.borderColor = '#fbbf24'; assocMycardBtn.style.color = '#fbbf24'; }
+    } else {
+        if (assocCashBtn) { assocCashBtn.classList.add('active-cash'); assocCashBtn.style.background = 'rgba(251,191,36,0.3)'; assocCashBtn.style.borderColor = '#fbbf24'; assocCashBtn.style.color = '#fbbf24'; }
+        if (assocMycardBtn) { assocMycardBtn.classList.remove('active-cash'); assocMycardBtn.style.background = ''; assocMycardBtn.style.borderColor = 'rgba(255,255,255,0.15)'; assocMycardBtn.style.color = ''; }
+    }
+    const limitedPkg = relatedPayments.find(p => p.pkgType === 'limited');
+    const limitedMethod = limitedPkg ? (limitedPkg.payMethod || 'cash') : 'cash';
+    payMethods.edit_limited = limitedMethod;
+    const limitedCashBtn = document.getElementById('pay_edit_limited_cash');
+    const limitedMycardBtn = document.getElementById('pay_edit_limited_mycard');
+    if (limitedMethod === 'mycard') {
+        if (limitedCashBtn) { limitedCashBtn.style.background = ''; limitedCashBtn.style.borderColor = 'rgba(255,255,255,0.15)'; limitedCashBtn.style.color = ''; }
+        if (limitedMycardBtn) { limitedMycardBtn.style.background = 'rgba(251,191,36,0.3)'; limitedMycardBtn.style.borderColor = '#fbbf24'; limitedMycardBtn.style.color = '#fbbf24'; }
+    } else {
+        if (limitedCashBtn) { limitedCashBtn.style.background = 'rgba(251,191,36,0.3)'; limitedCashBtn.style.borderColor = '#fbbf24'; limitedCashBtn.style.color = '#fbbf24'; }
+        if (limitedMycardBtn) { limitedMycardBtn.style.background = ''; limitedMycardBtn.style.borderColor = 'rgba(255,255,255,0.15)'; limitedMycardBtn.style.color = ''; }
+    }
+    const revivalPkg = relatedPayments.find(p => p.pkgType === 'revival');
+    const revivalMethod = revivalPkg ? (revivalPkg.payMethod || 'cash') : 'cash';
+    payMethods.edit_revival = revivalMethod;
+    const revivalCashBtn = document.getElementById('pay_edit_revival_cash');
+    const revivalMycardBtn = document.getElementById('pay_edit_revival_mycard');
+    if (revivalMethod === 'mycard') {
+        if (revivalCashBtn) { revivalCashBtn.style.background = ''; revivalCashBtn.style.borderColor = 'rgba(255,255,255,0.15)'; revivalCashBtn.style.color = ''; }
+        if (revivalMycardBtn) { revivalMycardBtn.style.background = 'rgba(251,191,36,0.3)'; revivalMycardBtn.style.borderColor = '#fbbf24'; revivalMycardBtn.style.color = '#fbbf24'; }
+    } else {
+        if (revivalCashBtn) { revivalCashBtn.style.background = 'rgba(251,191,36,0.3)'; revivalCashBtn.style.borderColor = '#fbbf24'; revivalCashBtn.style.color = '#fbbf24'; }
+        if (revivalMycardBtn) { revivalMycardBtn.style.background = ''; revivalMycardBtn.style.borderColor = 'rgba(255,255,255,0.15)'; revivalMycardBtn.style.color = ''; }
+    }
 };
 
 window.openEditPayment = (id) => {
@@ -1165,7 +1485,17 @@ window.openEditPayment = (id) => {
 
     const isMonthly = p.type === '月卡';
     const isCrystal = p.type === '晶鑽儲值';
-    const isCheck = ['週卡','每日限購(珍貴)','每日限購(璀璨)','特別密約','升級版特別密約'].includes(p.type);
+    const isCashOnly = ['週卡','每日限購(珍貴)','每日限購(璀璨)'].includes(p.type);
+    const currentMethod = p.payMethod || 'cash';
+
+    const payMethodHtml = `
+        <div>
+            <label class="text-[11px] text-[#9ba1ad] block mb-2 font-bold ml-1">付款方式</label>
+            <div class="flex gap-2">
+                <button type="button" id="pay_edit_pay_method_cash" class="paymethod-btn ${currentMethod === 'cash' ? 'active-cash' : ''}" style="${currentMethod === 'cash' ? 'background:rgba(251,191,36,0.3);border-color:#fbbf24;color:#fbbf24;' : ''}" onclick="setPayMethod('edit_pay_method','cash')">現金</button>
+                <button type="button" id="pay_edit_pay_method_mycard" class="paymethod-btn ${currentMethod === 'mycard' ? 'active-mycard' : ''}" style="${currentMethod === 'mycard' ? 'background:rgba(251,191,36,0.3);border-color:#fbbf24;color:#fbbf24;' : ''}" onclick="setPayMethod('edit_pay_method','mycard')">點數</button>
+            </div>
+        </div>`;
 
     let fieldsHtml = `
         <div>
@@ -1173,6 +1503,7 @@ window.openEditPayment = (id) => {
             <input type="date" id="edit_payDate" value="${p.date}" class="w-full">
         </div>
         <div class="p-3 bg-white/5 rounded-xl text-xs text-[#9ba1ad]">類型：<span class="text-white font-bold">${p.type}</span></div>
+        ${isCashOnly ? '' : payMethodHtml}
     `;
 
     if (isMonthly) {
@@ -1205,13 +1536,14 @@ window.openEditPayment = (id) => {
     }
 
     document.getElementById('editModalFields').innerHTML = fieldsHtml;
+    payMethods['edit_pay_method'] = currentMethod;
     document.getElementById('editModal').style.display = 'flex';
+    document.getElementById('editModal').querySelector('.glass-card').scrollTop = 0;
     lucide.createIcons();
 };
 
 window.saveEdit = () => {
     if (!editTarget) return;
-
     if (editTarget.type === 'activity') {
         const newDate = document.getElementById('edit_actDate').value;
         const newName = document.getElementById('edit_actName').value.trim();
@@ -1219,84 +1551,88 @@ window.saveEdit = () => {
         const after = parseInt(document.getElementById('edit_actAfter').value) || 0;
         const newSpent = Math.max(0, before - after);
         const oldDate = editTarget.date;
-        const oldNames = activities.filter(a => a.date === oldDate).map(a => a.name);
-
+const oldName = editTarget.name;
+const oldNames = [oldName];
+const relatedPayments = payments.filter(p => p.date === oldDate && p.ref === oldName);
         activities = activities.map(a => {
-            if (a.date === oldDate) return { ...a, name: newName, date: newDate, spent: newSpent };
-            return a;
-        });
-
-const assocPreviewStr = document.getElementById('edit_assocPreview') ? document.getElementById('edit_assocPreview').innerText.replace(/,/g,'').match(/\d+/) : null;
-const assocAmount = assocPreviewStr ? parseInt(assocPreviewStr[0]) : 0;
-        
-        const limitedLabels = PKG_LIMITED.map(p => p.label);
-const revivalLabels = PKG_REVIVAL.map(p => p.label);
-
-const newLimited = PKG_LIMITED.map(pkg => ({ label: pkg.label, qty: parseInt(document.getElementById('edit_val_'+pkg.id)?.innerText)||0, price: pkg.price })).filter(x => x.qty > 0);
-const newRevival = PKG_REVIVAL.map(pkg => ({ label: pkg.label, qty: parseInt(document.getElementById('edit_val_'+pkg.id)?.innerText)||0, price: pkg.price })).filter(x => x.qty > 0);
-const newCrystal = CRYSTAL_SPEC.map(spec => ({ cry: spec.cry, qty: parseInt(document.getElementById(`edit_act_cry_qty_${spec.cry}`)?.value)||0, price: spec.p })).filter(x => x.qty > 0);
-const newAssoc = assocAmount > 0 ? assocAmount : null;
-const newOther = parseInt(document.getElementById('edit_otherAmount')?.value)||0;
-
-const savedPayments = payments.filter(p => p.date === oldDate && oldNames.includes(p.ref));
-const limitedCatOpen = document.getElementById('edit-cat-limited')?.classList.contains('open');
-const changedLimited = limitedCatOpen && JSON.stringify(newLimited) !== JSON.stringify(savedPayments.filter(p=>limitedLabels.includes(p.type)&&p.pkgType==='limited').map(p=>({label:p.type,qty:p.qty,price:p.amount/p.qty})));
-const revivalCatOpen = document.getElementById('edit-cat-revival')?.classList.contains('open');
-const changedRevival = revivalCatOpen && JSON.stringify(newRevival) !== JSON.stringify(savedPayments.filter(p=>revivalLabels.includes(p.type)&&p.pkgType==='revival').map(p=>({label:p.type,qty:p.qty,price:p.amount/p.qty})));
-const crystalCatOpen = document.getElementById('edit-cat-crystal')?.classList.contains('open');
-const changedCrystal = crystalCatOpen && JSON.stringify(newCrystal.map(x=>({cry:x.cry,qty:x.qty}))) !== JSON.stringify(savedPayments.filter(p=>p.type==='晶鑽儲值').map(p=>({cry:p.crystalVal,qty:p.qty})));
-const assocCatOpen = document.getElementById('edit-cat-assoc')?.classList.contains('open');
-const changedAssoc = assocCatOpen && newAssoc !== (savedPayments.find(p=>p.type==='協會等級禮包')?.amount || null);
-const otherCatOpen = document.getElementById('edit-cat-other')?.classList.contains('open');
-const changedOther = otherCatOpen && newOther !== (savedPayments.find(p=>p.type==='其他課金')?.amount || 0);
-
-payments = payments.filter(p => {
-    if (!(p.date === oldDate && oldNames.includes(p.ref))) return true;
-    if (changedLimited && limitedLabels.includes(p.type) && p.pkgType === 'limited') return false;
-    if (changedRevival && revivalLabels.includes(p.type) && p.pkgType === 'revival') return false;
-    if (changedCrystal && p.type === '晶鑽儲值') return false;
-    if (changedAssoc && p.type === '協會等級禮包') return false;
-    if (changedOther && p.type === '其他課金') return false;
-    return true;
+    if (a.id === editTarget.id) return { ...a, name: newName, date: newDate, spent: newSpent };
+    return a;
 });
-
+        const assocPreviewStr = document.getElementById('edit_assocPreview') ? document.getElementById('edit_assocPreview').innerText.replace(/,/g,'').match(/\d+/) : null;
+        const assocAmount = assocPreviewStr ? parseInt(assocPreviewStr[0]) : 0;
+        const limitedLabels = PKG_POOLS[poolTypes.limited ? poolTypes.limited : 'limited_single_day'].map(p => p.label);
+        const revivalLabels = PKG_POOLS[poolTypes.revival ? poolTypes.revival : 'revival_single_day'].map(p => p.label);
+        const limitedPool = PKG_POOLS[poolTypes.limited] || PKG_POOLS['limited_single_day'];
+        const revivalPool = PKG_POOLS[poolTypes.revival] || PKG_POOLS['revival_single_day'];
+        const newLimited = limitedPool.map(pkg => { const el = document.getElementById('edit_val_'+pkg.id); return { label: pkg.label, qty: parseInt(el ? el.innerText : 0)||0, price: pkg.price }; }).filter(x => x.qty > 0);
+        const newRevival = revivalPool.map(pkg => { const el = document.getElementById('edit_val_'+pkg.id); return { label: pkg.label, qty: parseInt(el ? el.innerText : 0)||0, price: pkg.price }; }).filter(x => x.qty > 0);
+        const newCrystal = CRYSTAL_SPEC.map(spec => { const el = document.getElementById('edit_act_cry_qty_'+spec.cry); return { cry: spec.cry, qty: parseInt(el ? el.value : 0)||0, price: spec.p }; }).filter(x => x.qty > 0);
+        const newAssoc = assocAmount > 0 ? assocAmount : null;
+        const editOtherMethod = payMethods.edit_other || 'cash';
+const newOtherAmt = parseInt((document.getElementById('edit_otherAmount') ? document.getElementById('edit_otherAmount').value : 0))||0;
+        const savedPayments = payments.filter(p => p.date === oldDate && p.ref === oldName);
+        const changedLimited = true;
+        const changedRevival = true;
+        const crystalCatOpen = document.getElementById('edit-cat-crystal') ? document.getElementById('edit-cat-crystal').classList.contains('open') : false;
+        const changedCrystal = crystalCatOpen;
+        const assocCatOpen = document.getElementById('edit-cat-assoc') ? document.getElementById('edit-cat-assoc').classList.contains('open') : false;
+        const assocPkg = savedPayments.find(p=>p.type==='協會等級禮包');
+        const changedAssoc = assocCatOpen;
+        const otherCatOpen = document.getElementById('edit-cat-other') ? document.getElementById('edit-cat-other').classList.contains('open') : false;
+        const otherPkg = savedPayments.find(p=>p.type==='其他課金');
+        const changedOther = otherCatOpen;
+        payments = payments.filter(p => {
+    if (!(p.date === oldDate && p.ref === oldName)) return true;
+            if (changedLimited && limitedLabels.includes(p.type) && p.pkgType === 'limited') return false;
+            if (changedRevival && revivalLabels.includes(p.type) && p.pkgType === 'revival') return false;
+            if (changedCrystal && p.type === '晶鑽儲值') return false;
+            if (changedAssoc && p.type === '協會等級禮包') return false;
+            if (changedOther && p.type === '其他課金') return false;
+            return true;
+        });
         const ts = Date.now();
-
-       if (changedLimited) PKG_LIMITED.forEach(pkg => {
-            const el = document.getElementById('edit_val_' + pkg.id);
-            if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,pkgType:'limited',timestamp:ts}); }
-        });
-
-        if (changedRevival) PKG_REVIVAL.forEach(pkg => {
-            const el = document.getElementById('edit_val_' + pkg.id);
-            if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,pkgType:'revival',timestamp:ts}); }
-        });
-
+        if (changedLimited) {
+            const foundLimited2 = relatedPayments.find(p => p.pkgType === 'limited');
+            const editLimitedPool = (foundLimited2 ? foundLimited2.poolType : null) || 'limited_single_day';
+            const foundLimitedBtn = [...document.querySelectorAll('[id^="edit_pool_limited"]')].find(b => b.style.background.includes('94, 92, 230'));
+            const activeLimitedPool = (foundLimitedBtn ? foundLimitedBtn.id.replace('edit_pool_','') : null) || editLimitedPool;
+            PKG_POOLS[activeLimitedPool].forEach(pkg => {
+                const el = document.getElementById('edit_val_' + pkg.id);
+                if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,pkgType:'limited',poolType:activeLimitedPool,payMethod:payMethods.edit_limited,timestamp:ts}); }
+            });
+        }
+        if (changedRevival) {
+            const foundRevival2 = relatedPayments.find(p => p.pkgType === 'revival');
+            const editRevivalPool = (foundRevival2 ? foundRevival2.poolType : null) || 'revival_single_day';
+            const foundRevivalBtn = [...document.querySelectorAll('[id^="edit_pool_revival"]')].find(b => b.style.background.includes('94, 92, 230'));
+            const activeRevivalPool = (foundRevivalBtn ? foundRevivalBtn.id.replace('edit_pool_','') : null) || editRevivalPool;
+            PKG_POOLS[activeRevivalPool].forEach(pkg => {
+                const el = document.getElementById('edit_val_' + pkg.id);
+                if (el) { const q = parseInt(el.innerText)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:pkg.label,amount:pkg.price*q,qty:q,ref:newName,pkgType:'revival',poolType:activeRevivalPool,payMethod:payMethods.edit_revival,timestamp:ts}); }
+            });
+        }
         if (changedCrystal) CRYSTAL_SPEC.forEach(spec => {
-            const el = document.getElementById(`edit_act_cry_qty_${spec.cry}`);
-            if (el) { const q = parseInt(el.value)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:'晶鑽儲值',amount:spec.p*q,qty:q,crystalVal:spec.cry,ref:newName,timestamp:ts}); }
+            const el = document.getElementById('edit_act_cry_qty_'+spec.cry);
+            if (el) { const q = parseInt(el.value)||0; if (q>0) payments.push({id:'p_'+Math.random(),date:newDate,type:'晶鑽儲值',amount:spec.p*q,qty:q,crystalVal:spec.cry,ref:newName,payMethod:payMethods.edit_crystal,timestamp:ts}); }
         });
-
-        if (changedAssoc && assocAmount > 0) payments.push({id:'p_'+Math.random(),date:newDate,type:'協會等級禮包',amount:assocAmount,qty:1,ref:newName,timestamp:ts});
-        if (changedOther && newOther > 0) payments.push({id:'p_'+Math.random(),date:newDate,type:'其他課金',amount:newOther,qty:1,ref:newName,timestamp:ts});
-
+        if (changedAssoc && assocAmount > 0) payments.push({id:'p_'+Math.random(),date:newDate,type:'協會等級禮包',amount:assocAmount,qty:1,ref:newName,payMethod:payMethods.edit_assoc,timestamp:ts});
+        if (changedOther && newOtherAmt > 0) payments.push({id:'p_'+Math.random(),date:newDate,type:'其他課金',amount:newOtherAmt,qty:1,ref:newName,payMethod:editOtherMethod,timestamp:ts});
     } else if (editTarget.type === 'payment') {
         const id = editTarget.id;
         const p = payments.find(x => x.id === id);
         if (!p) return;
         const newDate = document.getElementById('edit_payDate').value;
-
         if (p.type === '月卡') {
             const qty = parseInt(document.getElementById('edit_pay_qty').innerText) || 1;
-            payments = payments.map(x => x.id === id ? { ...x, date: newDate, qty, amount: 150 * qty } : x);
+            payments = payments.map(x => x.id === id ? { ...x, date: newDate, qty, amount: 150 * qty, payMethod: payMethods.edit_pay_method } : x);
         } else if (p.type === '晶鑽儲值') {
             let found = false;
             CRYSTAL_SPEC.forEach(spec => {
-                const el = document.getElementById(`edit_gen_cry_qty_${spec.cry}`);
+                const el = document.getElementById('edit_gen_cry_qty_'+spec.cry);
                 if (el) {
                     const q = parseInt(el.value) || 0;
                     if (q > 0 && !found) {
-                        payments = payments.map(x => x.id === id ? { ...x, date: newDate, crystalVal: spec.cry, amount: spec.p * q, qty: q } : x);
+                        payments = payments.map(x => x.id === id ? { ...x, date: newDate, crystalVal: spec.cry, amount: spec.p * q, qty: q, payMethod: payMethods.edit_pay_method } : x);
                         found = true;
                     }
                 }
@@ -1306,10 +1642,9 @@ payments = payments.filter(p => {
             const qtyEl = document.getElementById('edit_payQty');
             const amount = amountEl ? parseInt(amountEl.value) || 0 : p.amount;
             const qty = qtyEl ? parseInt(qtyEl.value) || 1 : p.qty;
-            payments = payments.map(x => x.id === id ? { ...x, date: newDate, amount, qty } : x);
+            payments = payments.map(x => x.id === id ? { ...x, date: newDate, amount, qty, payMethod: payMethods.edit_pay_method } : x);
         }
     }
-
     closeEditModal();
     localSave();
     updateFilters();
@@ -1327,6 +1662,200 @@ payments = payments.filter(p => {
             payments = payments.filter(p => !(p.date === date && names.includes(p.ref)));
             localSave(); updateFilters(); renderUI();
         };
+
+const poolTypes = {
+    limited: 'limited_single_day',
+    revival: 'revival_single_day'
+};
+
+const POOL_LABELS = {
+    limited_single_day:   '單人日卡',
+    limited_single_month: '單人月卡',
+    limited_multi:        '多人混池',
+    revival_single_day:   '單人日卡',
+    revival_single_month: '單人月卡',
+    revival_multi:        '多人混池'
+};
+const payMethods = {
+    limited: 'cash',
+    revival: 'cash',
+    crystal: 'cash',
+    assoc: 'cash',
+    other: 'cash',
+    monthly: 'cash',
+    promise_special: 'cash',
+    promise_upgrade: 'cash',
+    edit_limited: 'cash',
+    edit_revival: 'cash',
+    edit_crystal: 'cash',
+    edit_assoc: 'cash',
+    edit_other: 'cash',
+    edit_pay_method: 'cash'
+};
+
+window.setPoolType = (category, poolType) => {
+    poolTypes[category] = poolType;
+    const prefix = category === 'limited' ? 'val_' : 'val_';
+    const listId = category === 'limited' ? 'list-limited' : 'list-revival';
+    const pkgList = PKG_POOLS[poolType];
+    
+    // 更新按鈕樣式
+    const allTypes = category === 'limited' 
+        ? ['limited_single_day', 'limited_single_month', 'limited_multi']
+        : ['revival_single_day', 'revival_single_month', 'revival_multi'];
+    
+    allTypes.forEach(t => {
+        const btn = document.getElementById(`pool_${t}`);
+        if (btn) {
+            btn.style.background = t === poolType ? 'var(--accent-purple)' : 'rgba(255,255,255,0.05)';
+            btn.style.color = t === poolType ? 'white' : '';
+            btn.style.borderColor = t === poolType ? 'var(--accent-purple)' : 'rgba(255,255,255,0.15)';
+        }
+    });
+
+    // 重新渲染禮包清單
+    const box = document.getElementById(listId);
+    if (!box) return;
+    box.innerHTML = '';
+    pkgList.forEach(p => {
+        const limit = p.max || 99;
+        box.innerHTML += `
+            <div class="flex items-center justify-between p-4 rounded-2xl border border-white/5" style="background:#2c2e3a;">
+                <div class="flex flex-col">
+                    <span class="text-sm font-bold">${p.label}</span>
+                    <span style="font-size:10px;color:#818cf8;">NT$ ${p.price}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="max-btn" type="button" onclick="adjustLabelQty('val_${p.id}', ${limit})">MAX</button>
+                    <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg">
+                        <button class="counter-btn" type="button" onclick="adjustLabelQty('val_${p.id}',-1,0,${limit})">-</button>
+                        <span id="val_${p.id}" class="w-6 text-center text-sm font-bold">0</span>
+                        <button class="counter-btn" type="button" onclick="adjustLabelQty('val_${p.id}',1,0,${limit})">+</button>
+                    </div>
+                </div>
+            </div>`;
+    });
+};
+window.setEditPoolType = (category, poolType) => {
+    const date = editTarget ? editTarget.date : null;
+    const existingPayments = payments.filter(p => p.date === date);
+    const listId = category === 'limited' ? 'edit-cat-limited' : 'edit-cat-revival';
+    const pkgType = category === 'limited' ? 'limited' : 'revival';
+    const pkgList = PKG_POOLS[poolType];
+
+    // 更新按鈕樣式
+    const allTypes = category === 'limited'
+        ? ['limited_single_day', 'limited_single_month', 'limited_multi']
+        : ['revival_single_day', 'revival_single_month', 'revival_multi'];
+
+    allTypes.forEach(t => {
+        const btn = document.getElementById(`edit_pool_${t}`);
+        if (btn) {
+            btn.style.background = t === poolType ? 'var(--accent-purple)' : 'rgba(255,255,255,0.05)';
+            btn.style.color = t === poolType ? 'white' : '';
+            btn.style.borderColor = t === poolType ? 'var(--accent-purple)' : 'rgba(255,255,255,0.15)';
+        }
+    });
+
+    // 重新渲染禮包清單
+    const container = document.querySelector(`#${listId} .grid`);
+    if (!container) return;
+    container.innerHTML = '';
+    pkgList.forEach(p => {
+        const match = existingPayments.find(pay => pay.type === p.label && pay.pkgType === pkgType);
+        const qty = match ? match.qty : 0;
+        const limit = p.max || 99;
+        container.innerHTML += `
+            <div class="flex items-center justify-between p-4 bg-[#2c2e3a] rounded-2xl border border-white/5">
+                <div class="flex flex-col">
+                    <span class="text-sm font-bold">${p.label}</span>
+                    <span style="font-size:10px;color:#818cf8;">NT$ ${p.price}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="max-btn" type="button" onclick="adjustLabelQty('edit_val_${p.id}', ${limit})">MAX</button>
+                    <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg">
+                        <button class="counter-btn" type="button" onclick="adjustLabelQty('edit_val_${p.id}',-1,0,${limit})">-</button>
+                        <span id="edit_val_${p.id}" class="w-6 text-center text-sm font-bold">${qty}</span>
+                        <button class="counter-btn" type="button" onclick="adjustLabelQty('edit_val_${p.id}',1,0,${limit})">+</button>
+                    </div>
+                </div>
+            </div>`;
+    });
+};
+        window.setPayMethod = (category, method) => {
+    payMethods[category] = method;
+    const cashBtn = document.getElementById(`pay_${category}_cash`);
+    const mycardBtn = document.getElementById(`pay_${category}_mycard`);
+    if (cashBtn) {
+        cashBtn.classList.toggle('active-cash', method === 'cash');
+        cashBtn.classList.toggle('active-mycard', false);
+        if (cashBtn.innerText === '💰') {
+            cashBtn.style.background = method === 'cash' ? 'rgba(251,191,36,0.5)' : 'rgba(255,255,255,0.05)';
+            cashBtn.style.borderColor = '#fbbf24';
+        }
+    }
+    if (mycardBtn) {
+        mycardBtn.classList.toggle('active-mycard', method === 'mycard');
+        mycardBtn.classList.toggle('active-cash', false);
+        if (mycardBtn.innerText === '🎫') {
+            mycardBtn.style.background = method === 'mycard' ? 'rgba(251,191,36,0.3)' : 'rgba(255,255,255,0.05)';
+            mycardBtn.style.borderColor = method === 'mycard' ? '#fbbf24' : 'rgba(255,255,255,0.15)';
+        }
+    }
+if (cashBtn && cashBtn.innerText === '現金') {
+        cashBtn.style.background = method === 'cash' ? 'rgba(251,191,36,0.3)' : 'rgba(255,255,255,0.05)';
+        cashBtn.style.borderColor = method === 'cash' ? '#fbbf24' : 'rgba(255,255,255,0.15)';
+        cashBtn.style.color = method === 'cash' ? '#fbbf24' : '';
+    }
+    if (mycardBtn && mycardBtn.innerText === '點數') {
+        mycardBtn.style.background = method === 'mycard' ? 'rgba(251,191,36,0.3)' : 'rgba(255,255,255,0.05)';
+        mycardBtn.style.borderColor = method === 'mycard' ? '#fbbf24' : 'rgba(255,255,255,0.15)';
+        mycardBtn.style.color = method === 'mycard' ? '#fbbf24' : '';
+    }
+    if (category === 'other') {
+        if (category === 'edit_other') {
+        const cashField = document.getElementById('edit-other-cash-field');
+        const mycardField = document.getElementById('edit-other-mycard-field');
+        if (cashField) cashField.style.display = method === 'cash' ? '' : 'none';
+        if (mycardField) mycardField.style.display = method === 'mycard' ? '' : 'none';
+    }
+        const cashField = document.getElementById('other-cash-field');
+        const mycardField = document.getElementById('other-mycard-field');
+        if (cashField) cashField.style.display = method === 'cash' ? '' : 'none';
+        if (mycardField) mycardField.style.display = method === 'mycard' ? '' : 'none';
+    }
+};
+
+function resetPayMethods() {
+    ['limited', 'revival', 'crystal', 'assoc', 'other', 'monthly', 'promise_special', 'promise_upgrade'].forEach(cat => {
+        payMethods[cat] = 'cash';
+        const cashBtn = document.getElementById(`pay_${cat}_cash`);
+        const mycardBtn = document.getElementById(`pay_${cat}_mycard`);
+        if (cashBtn) { cashBtn.classList.add('active-cash'); cashBtn.classList.remove('active-mycard'); }
+        if (mycardBtn) { mycardBtn.classList.remove('active-mycard'); mycardBtn.classList.remove('active-cash'); }
+    });
+    // 重置池子類型為預設值
+    poolTypes.limited = 'limited_single_day';
+    poolTypes.revival = 'revival_single_day';
+    ['limited_single_day', 'limited_single_month', 'limited_multi'].forEach((t, i) => {
+        const btn = document.getElementById(`pool_${t}`);
+        if (btn) {
+            btn.style.background = i === 0 ? 'var(--accent-purple)' : 'rgba(255,255,255,0.05)';
+            btn.style.color = i === 0 ? 'white' : '';
+            btn.style.borderColor = i === 0 ? 'var(--accent-purple)' : 'rgba(255,255,255,0.15)';
+        }
+    });
+    ['revival_single_day', 'revival_single_month', 'revival_multi'].forEach((t, i) => {
+        const btn = document.getElementById(`pool_${t}`);
+        if (btn) {
+            btn.style.background = i === 0 ? 'var(--accent-purple)' : 'rgba(255,255,255,0.05)';
+            btn.style.color = i === 0 ? 'white' : '';
+            btn.style.borderColor = i === 0 ? 'var(--accent-purple)' : 'rgba(255,255,255,0.15)';
+        }
+    });
+}
+
+let currentDiscount = 100;
 
         window.adjustLabelQty = (id, valOrDelta, min, max) => {
             const el = document.getElementById(id); if(!el) return;
