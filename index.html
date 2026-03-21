@@ -922,7 +922,7 @@ renderPkgs(PKG_POOLS['revival_single_day'], 'list-revival', 'val_');
                 item.onclick = () => {
                     checkedStates[item.id] = !checkedStates[item.id];
                     item.classList.toggle('active', checkedStates[item.id]);
-                    const iconWrapper = item.querySelector('.check-icon') || item.querySelector('div:last-child');
+                    const iconWrapper = item.querySelector('.check-icon');
                     if (iconWrapper) iconWrapper.classList.toggle('opacity-0', !checkedStates[item.id]);
                 };
             });
@@ -953,6 +953,13 @@ renderPkgs(PKG_POOLS['revival_single_day'], 'list-revival', 'val_');
             setPoolType('limited', 'limited_single_day');
             setPoolType('revival', 'revival_single_day');
             checkPatchNote();
+            ['check_promise_special', 'check_promise_upgrade'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        const rightDiv = el.querySelector('.flex.flex-col.items-end');
+        if (rightDiv) rightDiv.classList.remove('opacity-0');
+    }
+});
         }
 
         function addActivity() {
@@ -1035,7 +1042,14 @@ document.querySelectorAll('.category-content.open').forEach(el => el.classList.r
                 if (checkedStates[c.id]) {
                     payments.push({ id: 'p_'+Math.random(), date, type: c.label, amount: c.price, qty: 1, ref: '一般儲值', payMethod: payMethods[c.payKey] || 'cash', timestamp });
                     const el = document.getElementById(c.id); checkedStates[c.id] = false;
-                    if (el) { el.classList.remove('active'); const icon = el.querySelector('div:last-child'); if(icon) icon.classList.add('opacity-0'); }
+                    if (el) { el.classList.remove('active'); const icon = el.querySelector('.check-icon'); if(icon) icon.classList.add('opacity-0'); }
+                    if (c.payKey) {
+    const cashBtn = document.getElementById(`pay_${c.payKey}_cash`);
+    const mycardBtn = document.getElementById(`pay_${c.payKey}_mycard`);
+    if (cashBtn) { cashBtn.classList.add('active-cash'); cashBtn.style.background = 'rgba(251,191,36,0.3)'; cashBtn.style.borderColor = '#fbbf24'; cashBtn.style.color = '#fbbf24'; }
+    if (mycardBtn) { mycardBtn.classList.remove('active-cash'); mycardBtn.style.background = ''; mycardBtn.style.borderColor = 'rgba(255,255,255,0.15)'; mycardBtn.style.color = ''; }
+    payMethods[c.payKey] = 'cash';
+}
                     changed = true;
                 }
             });
