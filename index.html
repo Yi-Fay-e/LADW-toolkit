@@ -660,16 +660,14 @@
         };
 
         const PATCH_NOTE = {
-    version: 'v1.1.0',
-    date: '2026-03-21',
+    version: 'v1.1.1',
+    date: '2026-03-22',
     content: [
-        '✨ 新增點數支付選項',
-        '✨ 編輯視窗有資料的項目顯示綠點',
-        '✨ 新增不同卡池選項',
-        '🔧 修正部分禮包金額錯誤',
-        '🔧 修正同一天不同活動編輯時互相影響',
-        '🔧 編輯視窗卡池類型自動還原',
-        '🔧 登錄後選單自動合起',
+        '🔧 修正月卡儲存後付款方式未重置',
+        '🔧 修正其他課金點數欄位切換邏輯錯誤',
+        '🔧 修正編輯視窗使用錯誤池子類型導致禮包歸零',
+        '🔧 修正登錄後切換池子類型 MAX 數量顯示錯誤',
+        '🔧 同天同名活動編輯選單顯示加入序號區分',
     ],
     preview: null  // 有預告時填字串，沒有填 null
 };
@@ -1036,7 +1034,12 @@ document.querySelectorAll('.category-content.open').forEach(el => el.classList.r
             if (!date) return;
             let changed = false;
             const mQtyEl = document.getElementById('qty_monthly'); const mQty = parseInt(mQtyEl.innerText);
-            if (mQty > 0) { payments.push({ id: 'p_'+Math.random(), date, type: '月卡', amount: 150*mQty, qty: mQty, ref: '一般儲值', payMethod: payMethods.monthly, timestamp }); mQtyEl.innerText = '0'; changed = true; }
+            if (mQty > 0) { payments.push({ id: 'p_'+Math.random(), date, type: '月卡', amount: 150*mQty, qty: mQty, ref: '一般儲值', payMethod: payMethods.monthly, timestamp }); mQtyEl.innerText = '0';payMethods.monthly = 'cash';
+const monthlyCashBtn = document.getElementById('pay_monthly_cash');
+const monthlyMycardBtn = document.getElementById('pay_monthly_mycard');
+if (monthlyCashBtn) { monthlyCashBtn.classList.add('active-cash'); monthlyCashBtn.style.background = 'rgba(251,191,36,0.3)'; monthlyCashBtn.style.borderColor = '#fbbf24'; monthlyCashBtn.style.color = '#fbbf24'; }
+if (monthlyMycardBtn) { monthlyMycardBtn.classList.remove('active-cash'); monthlyMycardBtn.style.background = ''; monthlyMycardBtn.style.borderColor = 'rgba(255,255,255,0.15)'; monthlyMycardBtn.style.color = ''; }
+ changed = true; }
             const basicChecks = [{id: 'check_weekly', label: '週卡', price: 220, payKey: null}, {id: 'check_daily_rare', label: '每日限購(珍貴)', price: 15, payKey: null}, {id: 'check_daily_bright', label: '每日限購(璀璨)', price: 30, payKey: null}, {id: 'check_promise_special', label: '特別密約', price: 320, payKey: 'promise_special'}, {id: 'check_promise_upgrade', label: '升級版特別密約', price: 490, payKey: 'promise_upgrade'}];
             basicChecks.forEach(c => {
                 if (checkedStates[c.id]) {
@@ -1278,11 +1281,14 @@ window.chooseActivityToEdit = (date) => {
     }
     // 多個活動：跳出選單
     const menu = document.getElementById('actEditMenu');
-    menu.innerHTML = "<p class='text-xs text-white font-bold px-4 pt-2 pb-1'>選擇活動</p>" + acts.map(a =>
-        `<button class="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-xl"
-            onclick="document.getElementById('actEditMenu').style.display='none'; window.openEditActivity('${a.id}')"
-        >${a.name}</button>`
-    ).join('');
+    const nameCounts = {};
+menu.innerHTML = "<p class='text-xs text-white font-bold px-4 pt-2 pb-1'>選擇活動</p>" + acts.map(a => {
+    nameCounts[a.name] = (nameCounts[a.name] || 0) + 1;
+    const label = acts.filter(x => x.name === a.name).length > 1 ? `${a.name} (${nameCounts[a.name]})` : a.name;
+    return `<button class="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-xl"
+        onclick="document.getElementById(&quot;actEditMenu&quot;).style.display=&quot;none&quot;; window.openEditActivity('${a.id}')"
+    >${label}</button>`;
+}).join('');
     menu.style.display = 'block';
 };
 window.openEditActivity = (actId) => {
@@ -1574,10 +1580,10 @@ const relatedPayments = payments.filter(p => p.date === oldDate && p.ref === old
 });
         const assocPreviewStr = document.getElementById('edit_assocPreview') ? document.getElementById('edit_assocPreview').innerText.replace(/,/g,'').match(/\d+/) : null;
         const assocAmount = assocPreviewStr ? parseInt(assocPreviewStr[0]) : 0;
-        const limitedLabels = PKG_POOLS[poolTypes.limited ? poolTypes.limited : 'limited_single_day'].map(p => p.label);
-        const revivalLabels = PKG_POOLS[poolTypes.revival ? poolTypes.revival : 'revival_single_day'].map(p => p.label);
-        const limitedPool = PKG_POOLS[poolTypes.limited] || PKG_POOLS['limited_single_day'];
-        const revivalPool = PKG_POOLS[poolTypes.revival] || PKG_POOLS['revival_single_day'];
+        const limitedLabels = PKG_POOLS[poolTypes.edit_limited || 'limited_single_day'].map(p => p.label);
+const revivalLabels = PKG_POOLS[poolTypes.edit_revival || 'revival_single_day'].map(p => p.label);
+        const limitedPool = PKG_POOLS[poolTypes.edit_limited] || PKG_POOLS['limited_single_day'];
+        const revivalPool = PKG_POOLS[poolTypes.edit_revival] || PKG_POOLS['revival_single_day'];
         const newLimited = limitedPool.map(pkg => { const el = document.getElementById('edit_val_'+pkg.id); return { label: pkg.label, qty: parseInt(el ? el.innerText : 0)||0, price: pkg.price }; }).filter(x => x.qty > 0);
         const newRevival = revivalPool.map(pkg => { const el = document.getElementById('edit_val_'+pkg.id); return { label: pkg.label, qty: parseInt(el ? el.innerText : 0)||0, price: pkg.price }; }).filter(x => x.qty > 0);
         const newCrystal = CRYSTAL_SPEC.map(spec => { const el = document.getElementById('edit_act_cry_qty_'+spec.cry); return { cry: spec.cry, qty: parseInt(el ? el.value : 0)||0, price: spec.p }; }).filter(x => x.qty > 0);
@@ -1848,6 +1854,12 @@ function resetPayMethods() {
         if (cashBtn) { cashBtn.classList.add('active-cash'); cashBtn.classList.remove('active-mycard'); }
         if (mycardBtn) { mycardBtn.classList.remove('active-mycard'); mycardBtn.classList.remove('active-cash'); }
     });
+    const otherCashField = document.getElementById('other-cash-field');
+const otherMycardField = document.getElementById('other-mycard-field');
+if (otherCashField) otherCashField.style.display = '';
+if (otherMycardField) otherMycardField.style.display = 'none';
+document.getElementById('otherPkgPrice').value = '';
+document.getElementById('otherPkgPriceMycard').value = '';
     // 重置池子類型為預設值
     poolTypes.limited = 'limited_single_day';
     poolTypes.revival = 'revival_single_day';
@@ -1867,6 +1879,8 @@ function resetPayMethods() {
             btn.style.borderColor = i === 0 ? 'var(--accent-purple)' : 'rgba(255,255,255,0.15)';
         }
     });
+    setPoolType('limited', 'limited_single_day');
+setPoolType('revival', 'revival_single_day');
 }
 
 let currentDiscount = 100;
